@@ -1,7 +1,8 @@
 from random import *
 import pygame
 import math
-
+# import serveur
+# import client
 
 # Coder en Anglais en Case
 
@@ -65,7 +66,7 @@ class game:
 
     def __init__(self):
         self.__onScreenSurface = None
-        self.__sizeBoard = 5  # 5 7 9 11
+        self.__sizeBoard = 11  # 5 7 9 11
         self.__grid = []
         self.setFirstGrid()
         self.__numberOfPlayer = 4  # 2 4
@@ -76,6 +77,7 @@ class game:
         self.__bank = None
         self.bank()
         self.gameBoard()
+        self.console()
 
 #-------------------------
     # permet de set la grille au lancement du jeu
@@ -228,6 +230,7 @@ class game:
                             caseFinalX = self.caseCliquer(caseX,caseY)[0]
                             caseFinalY = self.caseCliquer(caseX,caseY)[1]
                             self.gameTurn(caseFinalX , caseFinalY)
+                            self.console()
 
             if running:
                 self.display(x,y)
@@ -294,8 +297,8 @@ class game:
         yellow = (255, 255, 0)
         grey = (120, 120, 120)
         lightGrey = (190, 190, 190)
-
-        self.__onScreenSurface.fill(white)
+        pygame.init()
+        self.__onScreenSurface.fill(casePawn(False,self.__currentPlayer).color())
         self.__onScreenSurface.blit(self.__tableSurface, (x, y))
         self.__tableSurface.fill(black)
         for i in range(len(self.__grid)):
@@ -335,7 +338,50 @@ class game:
                     if j != len(self.__grid) // 2:
                         pygame.draw.rect(self.__tableSurface, black,
                                             pygame.Rect(j * 75 + 50, i / 2 * 75 + 12.5, 25, 25))
-            pygame.display.flip()
+    
+        font = pygame.font.Font(None, 36)
+        for i in range(1,self.__numberOfPlayer+1):
+            text = "bank "+ casePawn(False,i).color() +" "+ str(self.__bank[casePawn(False, i).color()]) +" !"
+            text_surface = font.render(text, True, (255, 255, 255))
+            self.__onScreenSurface.blit(text_surface, (100, 100+(i*50)))
+        pygame.display.flip()
+
+# ------------------------------
+#   affichage  console
+# ------------------------------
+
+    def console(self):
+        for i in range(len(self.__grid)):
+            for j in range(len(self.__grid) // 2 + 1):
+                if i % 2 == 0:
+                    if self.__grid[i][j * 2].getPawn() == True:
+                        if self.__grid[i][j * 2].getPlayer() == 1:
+                            print("1",end="")
+                        if self.__grid[i][j * 2].getPlayer() == 2:
+                            print("2",end="")
+                        if self.__grid[i][j * 2].getPlayer() == 3:
+                            print("3",end="")
+                        if self.__grid[i][j * 2].getPlayer() == 4:
+                            print("4",end="")
+                    else:
+                        print(".",end="")
+                    
+                    if j != len(self.__grid) // 2:
+                        if self.__grid[i][j * 2 + 1].getBarrier() == True:
+                            print("|",end="")
+                        else:
+                            print("*",end="")
+                else:
+                    if self.__grid[i][j * 2].getBarrier() == True:
+                        print("-",end="")
+                    else:
+                        print("*",end="")
+                    if j != len(self.__grid) // 2:
+                        print("□",end="")
+                if j == len(self.__grid)// 2:
+                    print("")
+        print("________________________________________")
 
 
 game()
+
