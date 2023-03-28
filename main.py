@@ -78,7 +78,7 @@ class game:
         self.__bank = None
         self.bank()
         self.gameBoard()
-        self.console()
+        #self.console()
 
 #-------------------------
     # permet de set la grille au lancement du jeu
@@ -259,16 +259,18 @@ class game:
     def verifyVictory(self):
         if self.__pawnCoordinate["red"][0] == self.__sizeBoard * 2 - 2:
             print("Victoire du joueur Rouge !")
-            self.__running = False 
+            return True
         elif self.__pawnCoordinate["blue"][0] == 0:
             print("Victoire du joueur Bleue !")
-            self.__running = False 
+            return True
         elif self.__pawnCoordinate["yellow"][1] == 0:
             print("Victoire du joueur Jaune !")
-            self.__running = False 
+            return True
         elif self.__pawnCoordinate["green"][1] == self.__sizeBoard * 2 - 2:
             print("Victoire du joueur Vert !")
-            self.__running = False 
+            return True
+        else :
+            return False
 
 #-------------------------
     # permet de faire un tour de jeux depuis un clique
@@ -287,7 +289,10 @@ class game:
             if self.barrierVerification(x, y) == True:
                     self.barrierPlacement(y, x)
                     self.changePlayer()
-        self.verifyVictory()
+        if self.verifyVictory() == True :
+            self.__running = False
+            print("Jeux Terminé")
+
 
     #-------------------------
     # modifie la variable self.__currentPlayer a chaque apelle de la fonction
@@ -403,4 +408,3 @@ class game:
 
 
 game()
-
