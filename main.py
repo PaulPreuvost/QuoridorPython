@@ -67,7 +67,8 @@ class game:
     def __init__(self):
         self.__onScreenSurface = None
         self.__sizeBoard = 11  # 5 7 9 11
-        self.__grid = []
+        self.__grid = [] 
+        self.__running = None
         self.setFirstGrid()
         self.__numberOfPlayer = 4  # 2 4
         self.__currentPlayer = 1
@@ -206,11 +207,11 @@ class game:
         self.__onScreenSurface.blit(self.__tableSurface, (x, y))
 
         # Attendez pour fermer la fenêtre
-        running = True
-        while running:
+        self.__running = True
+        while self.__running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.__running = False
                 elif event.type == pygame.VIDEORESIZE:
                     windowSize = event.size
                     self.__onScreenSurface = pygame.display.set_mode(windowSize, pygame.RESIZABLE)
@@ -230,17 +231,17 @@ class game:
                             caseFinalX = self.caseCliquer(caseX,caseY)[0]
                             caseFinalY = self.caseCliquer(caseX,caseY)[1]
                             self.gameTurn(caseFinalX , caseFinalY)
-                            self.console()
+                            #self.console()
 
-            if running:
-                self.display(x,y)
+            if self.__running:
+                self.display(x, y)
                 # print(pygame.mouse.get_pos())
 
 #-------------------------
     # permet depuis les coordonees de la souris de savoire quelle case du plato est cliquer 
 #-------------------------
 
-    def caseCliquer(self,x,y):
+    def caseCliquer(self, x, y):
         decimalX = math.floor(x)
         decimalY = math.floor(y)
         caseX = decimalX * 2
@@ -250,13 +251,30 @@ class game:
         if (y - decimalY) > 0.6666:
             caseY += 1
         
-        return (caseX,caseY)
-    
+        return (caseX, caseY)
+
+# -------------------------
+#Condition de Victoire
+# -------------------------
+    def verifyVictory(self):
+        if self.__pawnCoordinate["red"][0] == self.__sizeBoard * 2 - 2:
+            print("Victoire du joueur Rouge !")
+            self.__running = False 
+        elif self.__pawnCoordinate["blue"][0] == 0:
+            print("Victoire du joueur Bleue !")
+            self.__running = False 
+        elif self.__pawnCoordinate["yellow"][1] == 0:
+            print("Victoire du joueur Jaune !")
+            self.__running = False 
+        elif self.__pawnCoordinate["green"][1] == self.__sizeBoard * 2 - 2:
+            print("Victoire du joueur Vert !")
+            self.__running = False 
+
 #-------------------------
     # permet de faire un tour de jeux depuis un clique
     # cette fonction ce sert de presque toute les autres fonction du programe
 #-------------------------
-    def gameTurn(self,x,y):
+    def gameTurn(self, x, y):
         if x % 2 == 0:
             if y % 2 == 0:
                 self.pawnPlacement(y,x)
@@ -269,8 +287,9 @@ class game:
             if self.barrierVerification(x, y) == True:
                     self.barrierPlacement(y, x)
                     self.changePlayer()
+        self.verifyVictory()
 
-#-------------------------
+    #-------------------------
     # modifie la variable self.__currentPlayer a chaque apelle de la fonction
 #-------------------------
 
@@ -287,7 +306,7 @@ class game:
     # cette fonction affiche le plateau celon la grille fournie
 #-------------------------
 
-    def display(self,x,y):
+    def display(self, x, y):
 
         white = (255, 255, 255)
         black = (0, 0, 0)
