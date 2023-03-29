@@ -15,7 +15,7 @@ class casePawn:
 
     """
 
-    def __init__(self, pawn=False, player=0):
+    def __init__(self, pawn = False, player = 0):
         self.__pawn = pawn
         self.__player = player
 
@@ -48,11 +48,11 @@ class caseBarrier:
 
     """
 
-    cette classe permet de retourner si il y a une barriere
+    cette classe permet de retourner s'il y a une barrière
 
     """
         
-    def __init__(self, barrier=False):
+    def __init__(self, barrier = False):
         self.__barrier = barrier
 
     def getBarrier(self):
@@ -82,7 +82,7 @@ class game:
 
 #-------------------------
     # permet de set la grille au lancement du jeu
-    # va placer les pions et ajuster la taille du plateau celon
+    # va placer les pions et ajuster la taille du plateau selon
     # la variable self.__sizeBoard
 #-------------------------
 
@@ -101,9 +101,9 @@ class game:
 
 #-------------------------
     # permet de set la variable self.__bank qui est
-    # un dictionnair de valeur cle : couleur du joueur
-    # valeur = chiffre int en valeur de barriere dans la bank du joueur
-    # la fonction est apadter pour 2 ou 4 joueur grace a la variable 
+    # un dictionnaire de valeurs clés : couleur du joueur
+    # valeur = chiffre int en valeur de barrière dans la banque du joueur
+    # la fonction est adapter pour 2 ou 4 joueur grâce a la variable 
     # self.__numberOfPlayer
 #-------------------------
 
@@ -114,10 +114,10 @@ class game:
             self.__bank = {"blue": 10, "red": 10}
 
 #-------------------------
-    # permet de placer dans la grille 2 barriere celon les coordonnees
-    # X et Y fournie va les placer en vertical ouo horizontal celon
-    # si Y est pair ou non
-    # puis va retirer 1 barriere de la bank du joueur en cour
+    # permet de placer dans la grille 2 barrières selon les coordonnées
+    # X et Y fournies, va les placer à la verticale ou à l'horizontale selon
+    # Y (pair ou non)
+    # puis va retirer 1 barrière de la banque du joueur en cours
 #-------------------------
 
     def barrierPlacement(self, x, y):
@@ -129,36 +129,36 @@ class game:
         self.__bank[casePawn(False, self.__currentPlayer).color()] -= 1
 
 #-------------------------
-    # va verrifier si les coordonnée fourmis sont accetable pour
-    # posee une barriere va verifier le contenue en bank
-    # puit regarde la direction puit le que placement ne soit pas
-    # a la limite du plateau et enfin verifie la 2eme barriere
+    # va verifier si les coordonnées fournis sont acceptables pour
+    # poser une barrière, va verifier le contenu en banque
+    # puis regarde la direction puis que le placement ne soit pas
+    # à la limite du plateau et enfin verifie la 2eme barrière
 #-------------------------
 
     def barrierVerification(self, x, y):
-        # verifie si ba barriere est posisionner vertical ou horizontal
+        # verifie si la barrière est positionner à la verticale ou à l'horizontale
         if y % 2 == 0:  # pair donc vertical sinon horizontal
             directions = "horizontal"
         else:
             directions = "vertical"
 
         if self.__bank[casePawn(False, self.__currentPlayer).color()] > 0:
-            if self.__sizeBoard * 2 - 2 in (x, y):  # verifie que le joueur n'est pas cliquer dans les case tout en bas ou tout a droite
+            if self.__sizeBoard * 2 - 2 in (x, y):  # verifie que le joueur n'a pas cliquer dans les cases tout en bas ou tout a droite
                 print("false derniere ligne")
                 return False
-            if self.__grid[y][x].getBarrier() == 0:  # si la position donner est vide alors on passe a la suite
+            if self.__grid[y][x].getBarrier() == 0:  # si la position donnée est vide alors on passe a la suite
                 if directions == "horizontal":
-                    return self.__grid[y +2][x].getBarrier() == 0  # verifie 2 case apres si elle est vide (car le coin compt comme une case)
+                    return self.__grid[y +2][x].getBarrier() == 0  # vérifie 2 cases après si elle est vide (car le coin compte comme une case)
                 else:
-                    return self.__grid[y][x + 2].getBarrier() == 0  # verifie 2 case en dessous si elle est vide (car le coin compt comme une case)
+                    return self.__grid[y][x + 2].getBarrier() == 0  # vérifie 2 cases en dessous si elle est vide (car le coin compte comme une case)
         else:
             print("false bank")
             return False
         
 #-------------------------
-    # va set la variable self.__pawnCoordinate : un dictionaire qui a en cle la couleur du joueur
-    # et en valeur c'est coordonée sous forme de list
-    # la fonction est adapter si les joueurs sont 2 ou 4
+    # va set la variable self.__pawnCoordinate : un dictionnaire qui a en clé la couleur du joueur
+    # et en valeur ses coordonée sous forme de liste
+    # la fonction est adaptée si les joueurs sont 2 ou 4
 #-------------------------
 
     def setPawnCoordinate(self):
@@ -176,8 +176,8 @@ class game:
             self.__grid[self.__sizeBoard - 1][self.__sizeBoard * 2 - 2] = casePawn(True, 4)
 
 #-------------------------
-    # permet de placer dans la grille 1 pion celon les coordonnees
-    # X et Y fournie va le place
+    # permet de placer dans la grille 1 pion selon les coordonnées
+    # X et Y fournies
     # puis va modifier la variable self.__pawnCoordinate pour l'adapter
 #-------------------------
 
@@ -228,8 +228,8 @@ class game:
                         if clicy >= y and clicy <= y+size:
                             caseX = (clicx - x) / 75
                             caseY = (clicy - y) / 75
-                            caseFinalX = self.caseCliquer(caseX,caseY)[0]
-                            caseFinalY = self.caseCliquer(caseX,caseY)[1]
+                            caseFinalX = self.caseClic(caseX,caseY)[0]
+                            caseFinalY = self.caseClic(caseX,caseY)[1]
                             self.gameTurn(caseFinalX , caseFinalY)
                             #self.console()
 
@@ -238,10 +238,10 @@ class game:
                 # print(pygame.mouse.get_pos())
 
 #-------------------------
-    # permet depuis les coordonees de la souris de savoire quelle case du plato est cliquer 
+    # permet depuis les coordonées de la souris de savoir quelle case du plateau est cliquée
 #-------------------------
 
-    def caseCliquer(self, x, y):
+    def caseClic(self, x, y):
         decimalX = math.floor(x)
         decimalY = math.floor(y)
         caseX = decimalX * 2
@@ -273,8 +273,8 @@ class game:
             return False
 
 #-------------------------
-    # permet de faire un tour de jeux depuis un clique
-    # cette fonction ce sert de presque toute les autres fonction du programe
+    # permet de faire un tour de jeu depuis un clic
+    # cette fonction se sert de presque toutes les autres fonctions du programme
 #-------------------------
     def gameTurn(self, x, y):
         if x % 2 == 0:
@@ -295,7 +295,7 @@ class game:
 
 
     #-------------------------
-    # modifie la variable self.__currentPlayer a chaque apelle de la fonction
+    # modifie la variable self.__currentPlayer à chaque appel de la fonction
 #-------------------------
 
     def changePlayer(self):
@@ -308,7 +308,7 @@ class game:
                 self.__currentPlayer = 1
 
 #-------------------------
-    # cette fonction affiche le plateau celon la grille fournie
+    # cette fonction affiche le plateau selon la grille fournie
 #-------------------------
 
     def display(self, x, y):
@@ -328,7 +328,7 @@ class game:
         for i in range(len(self.__grid)):
             for j in range(len(self.__grid) // 2 + 1):
 
-                if i % 2 == 0:  # si la ligne est paire on va placer une case pion puis une case barrier vertical
+                if i % 2 == 0:  # si la ligne est paire on va placer une case pion puis une case barrière verticale
 
                     if self.__grid[i][j * 2].getPawn() == True:
                         if self.__grid[i][j * 2].getPlayer() == 1:
