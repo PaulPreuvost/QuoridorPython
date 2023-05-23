@@ -311,7 +311,7 @@ class game:
 
 
     def verifyVictory(self):
-        # -------------------------
+    # -------------------------
         #Condition de Victoire
     # -------------------------
         if self.__pawnCoordinate["red"][0] == self.__sizeBoard * 2 - 2:
@@ -332,7 +332,6 @@ class game:
                 return False
         else :
             return False
-
 
     def caseClicked(self, x, y):
     #-------------------------
