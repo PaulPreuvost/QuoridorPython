@@ -3,10 +3,15 @@ from random import *
 import pygame
 import math
 
+from pygame import mixer
+# import serveur
+# import client
+# import threading
 
-#Importations des autres fichiers/classes pour le fonctionnement du code 
+#Importations des autres fichiers/classes pour le fonctionnement du code
 from includes.caseBarrier import caseBarrier
 from includes.casePawn import casePawn
+from includes.settings import setting
 
 # import serveur
 # import client
@@ -447,56 +452,49 @@ class game:
                         pygame.draw.rect(self.__tableSurface, black, pygame.Rect(j * 75 + 50, i / 2 * 75 + 12.5, 25, 25))
         font = pygame.font.Font(None, 25)
         for i in range(1,self.__numberOfPlayer+1):
-            banqueTexte = "Le nombre de murs du joeur "+ casePawn(False,i).color() +" est de "+ str(self.__bank[casePawn(False, i).color()])
-            banqueTexte_surface = font.render(banqueTexte, True, (255, 255, 255))            
-            self.__onScreenSurface.blit(banqueTexte_surface, (190, 250+(i*50)))
+            banque_texte = "Le nombre de murs du joeur "+ casePawn(False,i).color() +" est de "+ str(self.__bank[casePawn(False, i).color()])
+            banque_texte_surface = font.render(banque_texte, True, (255, 255, 255))            
+            self.__onScreenSurface.blit(banque_texte_surface, (190, 250+(i*50)))
         pygame.display.flip()
 
+    def play_sound(self, filename):
+        print("ok")
+        mixer.music.load(filename)
+        mixer.music.play(-1)
 
-    # def screenVictory(self):
-    # #-------------------------
-    #     # cette fonction affiche le joeur qui à gagné
-    # #-------------------------
-    #     pygame.init()
-    #     font = pygame.font.Font(None, 36)
-    #     text = "Le joeur " + self.__winPlayer + "a gangé !"
-    #     text_surface = font.render(text, True, (255, 255, 255))
-    #     self.__onScreenSurface.blit(text_surface, (100, 100+(i*50)))
-    #     pygame.display.flip()
-    #
+    def console(self):
+        # ------------------------------
+        # affichage  console
+        # ------------------------------
+        for i in range(len(self.__grid)):
+            for j in range(len(self.__grid) // 2 + 1):
+                if i % 2 == 0:
+                    if self.__grid[i][j * 2].getPawn() == True:
+                        if self.__grid[i][j * 2].getPlayer() == 1:
+                            print("1", end="")
+                        if self.__grid[i][j * 2].getPlayer() == 2:
+                            print("2", end="")
+                        if self.__grid[i][j * 2].getPlayer() == 3:
+                            print("3", end="")
+                        if self.__grid[i][j * 2].getPlayer() == 4:
+                            print("4", end="")
+                    else:
+                        print("□", end="")
 
-    # def console(self):
-    #     # ------------------------------
-    #     #affichage  console
-    # # ------------------------------
-    #     for i in range(len(self.__grid)):
-    #         for j in range(len(self.__grid) // 2 + 1):
-    #             if i % 2 == 0:
-    #                 if self.__grid[i][j * 2].getPawn() == True:
-    #                     if self.__grid[i][j * 2].getPlayer() == 1:
-    #                         print("1",end="")
-    #                     if self.__grid[i][j * 2].getPlayer() == 2:
-    #                         print("2",end="")
-    #                     if self.__grid[i][j * 2].getPlayer() == 3:
-    #                         print("3",end="")
-    #                     if self.__grid[i][j * 2].getPlayer() == 4:
-    #                         print("4",end="")
-    #                 else:
-    #                     print("□",end="")
-    #                 if j != len(self.__grid) // 2:
-    #                     if self.__grid[i][j * 2 + 1].getBarrier() == True:
-    #                         print("|",end="")
-    #                     else:
-    #                         print("*",end="")
-    #             else:
-    #                 if self.__grid[i][j * 2].getBarrier() == True:
-    #                     print("-",end="")
-    #                 else:
-    #                     print("*",end="")
-    #                 if j != len(self.__grid) // 2:
-    #                     print("+",end="")
-    #             if j == len(self.__grid)// 2:
-    #                 print("")
-    #     print("________________________________________")
+                    if j != len(self.__grid) // 2:
+                        if self.__grid[i][j * 2 + 1].getBarrier() == True:
+                            print("|", end="")
+                        else:
+                            print("*", end="")
+                else:
+                    if self.__grid[i][j * 2].getBarrier() == True:
+                        print("-", end="")
+                    else:
+                        print("*", end="")
+                    if j != len(self.__grid) // 2:
+                        print("+", end="")
+                if j == len(self.__grid) // 2:
+                    print("")
+        print("________________________________________")
 
-game()
+setting().display()
