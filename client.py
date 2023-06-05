@@ -1,7 +1,7 @@
 import socket
 
 
-class player:
+class Player:
     def start(self, ip):
         self.__client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__client.connect((ip, 5566))
@@ -27,4 +27,4 @@ class player:
 
 
 if __name__ == "__main__":
-    player("192.168.43.88")
+    Player("192.168.43.88")

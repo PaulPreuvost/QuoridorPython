@@ -1,7 +1,7 @@
 import threading
 import socket
 
-class serveur:
+class Serveur:
 
     def start(self):
         host = self.getIp()
@@ -60,4 +60,4 @@ class serveur:
         return(code[-1])
 
 if __name__ == "__main__":
-    serveur().start()
+    Serveur().start()
