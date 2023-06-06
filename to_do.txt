@@ -1,0 +1,51 @@
+TO DO 1PROJ
+
+- Mettre musique Télio
+- Lien vers autre WDS et Mac (page/son/image/font)
+- pathfinding
+
+
+- Rassembler le code
+- Finir les menus ->  faire marcher les boutons /transition de page
+- Appuie sur un bouton et ça modifie variable
+- Optimiser mis à jours (rafraîchissement pages)
+
+
+
+- IA difficulté de autres aléatoire
+- Faire IA niveau 2
+
+
+- Menu paramêtre
+- Menu réseau
+- Plateau de jeux
+- Optimiser mis à jours (rafraîchissement pages)
+
+
+
+- Documentation :
+    - Technique
+    - Utilisateur
+    - Read Me (voir comme ça marche)
+    - Repartition travaille / 1teams mis à jours (Git Hub) comment on à travailler)
+    - shéma général --> plusieur
+	- shama uml
+	- verif pas de fautes dans tous 
+	- voir le gg drive toutes les étapes
+
+
+
+- Clean
+    - Diviser le main --> faire un game.py
+    - appeler tout dans les bonnes chose
+    - verifs pas d'appel inutile
+    - diviser classe le game
+    - Clean code / nom fonction / snake_case/ Structure dossier / Commentaire / nettoyer code / Verif fautes
+    - Typer les fonction
+    - Clean code / Fichier
+    - commenter tout le code
+        - verif pas de fautes dans les commentaire
+    - Optimiser mis à jours (rafraîchissement pages)
+
+
+- Voir les pages et fonctionnalité gg drive
