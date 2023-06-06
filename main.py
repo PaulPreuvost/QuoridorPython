@@ -371,8 +371,9 @@ class Game:
                 print(message)
                 self.game_turn(int(message[0]), int(message[1]))
 
-            if running:
-                self.display(x, y)
+            self.display(x, y)
+            clock = pygame.time.Clock()
+            clock.tick(30)
 
     def case_IA(self):
         while self.__current_player == 2:

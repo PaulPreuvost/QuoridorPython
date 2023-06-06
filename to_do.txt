@@ -14,6 +14,7 @@ TO DO 1PROJ
 - IA difficulté de autres aléatoire
 - Faire IA niveau 2
 
+- Ecran de victoire, Possibilité de rejoué ou de retourner sur le plateau actuel
 - Menu Launch
 - Menu paramêtre
 - Menu réseau
