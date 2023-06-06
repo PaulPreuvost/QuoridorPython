@@ -14,7 +14,7 @@ TO DO 1PROJ
 - IA difficulté de autres aléatoire
 - Faire IA niveau 2
 
-
+- Menu Launch
 - Menu paramêtre
 - Menu réseau
 - Plateau de jeux
