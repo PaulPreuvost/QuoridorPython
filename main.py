@@ -9,8 +9,13 @@ from pygame_widgets.button import Button
 import random
 
 #Importations des autres fichiers/classes pour le fonctionnement du code
-from user_interface.colors import get_white, get_black, get_red, get_blue, get_green, get_grey, get_yellow, get_light_grey
-#from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_white, get_black, get_red, get_blue, get_green, get_grey, get_yellow,\ get_light_grey
+
+#Windows :
+from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_white, get_black, get_red, get_blue, get_green, get_grey, get_yellow, get_light_grey
+
+#macOS :
+#from user_interface.colors import get_white, get_black, get_red, get_blue, get_green, get_grey, get_yellow, get_light_grey
+
 import serveur
 import client
 from includes.case_barrier import case_barrier

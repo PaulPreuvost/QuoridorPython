@@ -1,7 +1,6 @@
 TO DO 1PROJ
 
 - Mettre musique Télio
-- Lien vers autre WDS et Mac (page/son/image/font)
 - pathfinding
 
 
