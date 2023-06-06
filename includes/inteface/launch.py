@@ -1,8 +1,8 @@
 import pygame
 import subprocess
 
-from user_interface.colors import get_white, get_black, get_red, get_blue, get_green, get_grey, get_yellow, get_light_red, get_light_blue, get_light_green, get_light_yellow, get_light_grey
-
+from user_interface.colors import get_white, get_black, get_red, get_blue, get_yellow
+#from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_white, get_black, get_red, get_blue, get_yellow,\ get_light_grey
 class Launch:
     def __init__(self):
         self.__onScreenSurface = None

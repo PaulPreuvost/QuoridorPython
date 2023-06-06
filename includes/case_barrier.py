@@ -3,8 +3,8 @@ class case_barrier:
     def __init__(self, barrier=False):
         self.__barrier = barrier
 
-    def getBarrier(self):
+    def get_barrier(self):
         return self.__barrier
 
-    def setBarrier(self, x):
+    def set_barrier(self, x):
         self.__barrier = x
