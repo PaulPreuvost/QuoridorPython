@@ -4,16 +4,16 @@ class case_pawn:
         self.__pawn = pawn
         self.__player = player
 
-    def getPawn(self):
+    def get_pawn(self):
         return self.__pawn
 
-    def setPawn(self, x):
+    def set_pawn(self, x):
         self.__pawn = x
 
-    def getPlayer(self):
+    def get_player(self):
         return self.__player
 
-    def setPlayer(self, x):
+    def set_player(self, x):
         self.__player = x
 
     def color(self):

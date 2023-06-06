@@ -44,5 +44,5 @@ def get_light_yellow():
     return light_yellow
 
 def get_light_grey():
-    light_grey = (190, 190, 190)
+    light_grey = (60, 60, 60)
     return light_grey

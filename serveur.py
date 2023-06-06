@@ -4,7 +4,7 @@ import socket
 class Serveur:
 
     def start(self):
-        host = self.getIp()
+        host = self.get_ip()
         port = 5566
         self.__server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__server.bind((host, port))
@@ -13,7 +13,7 @@ class Serveur:
         self.receive()
 
 
-    def getClients(self):
+    def get_clients(self):
         return self.__clients
 
 
@@ -50,12 +50,12 @@ class Serveur:
             thread.start()
 
 
-    def getIp(self):
+    def get_ip(self):
         ip = socket.gethostbyname_ex(socket.gethostname())[-1]
         return(ip[-1])
 
-    def getCode(self):
-        code = self.getIp()
+    def get_code(self):
+        code = self.get_ip()
         code = code.split(".")
         return(code[-1])
 
