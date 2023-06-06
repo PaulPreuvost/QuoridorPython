@@ -7,11 +7,16 @@
     <list default="true" id="0b5140f6-432a-4ded-bdd8-516c5c47323a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/Repo.iml" beforeDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/discord.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/discord.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/discord.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+>>>>>>> 3090eb30653abd16678d7206ce0d75a660f5ab28
       <change beforePath="$PROJECT_DIR$/includes/case_barrier.py" beforeDir="false" afterPath="$PROJECT_DIR$/includes/case_barrier.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/includes/case_pawn.py" beforeDir="false" afterPath="$PROJECT_DIR$/includes/case_pawn.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/includes/inteface/launch.py" beforeDir="false" />
@@ -67,7 +72,11 @@
       <workItem from="1685987084259" duration="14000" />
       <workItem from="1685987104245" duration="224000" />
       <workItem from="1686034472080" duration="4639000" />
+<<<<<<< HEAD
       <workItem from="1686058431445" duration="2455000" />
+=======
+      <workItem from="1686058431445" duration="1520000" />
+>>>>>>> 3090eb30653abd16678d7206ce0d75a660f5ab28
     </task>
     <servers />
   </component>
@@ -76,7 +85,11 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/QuoridorPython$settings.coverage" NAME="settings Coverage Results" MODIFIED="1685987286833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/includes/inteface" />
+<<<<<<< HEAD
     <SUITE FILE_PATH="coverage/QuoridorPython$main.coverage" NAME="main Coverage Results" MODIFIED="1686060935681" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+=======
+    <SUITE FILE_PATH="coverage/QuoridorPython$main.coverage" NAME="main Coverage Results" MODIFIED="1686059299673" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+>>>>>>> 3090eb30653abd16678d7206ce0d75a660f5ab28
     <SUITE FILE_PATH="coverage/QuoridorPython$launch.coverage" NAME="launch Coverage Results" MODIFIED="1685987293833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/includes/inteface" />
   </component>
 </project>
