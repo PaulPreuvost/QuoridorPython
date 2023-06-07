@@ -36,6 +36,7 @@ TO DO 1PROJ
 
 
 - Clean
+    - enlever tout les print VRM
     - Diviser le main --> faire un game.py
     - appeler tout dans les bonnes chose
     - verifs pas d'appel inutile

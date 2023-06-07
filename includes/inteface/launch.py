@@ -2,10 +2,10 @@ import pygame
 import subprocess
 
 #Windows :
-#from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_white, get_black, get_red, get_blue, get_yellow
+from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_white, get_black, get_red, get_blue, get_yellow
 
 #macOS :
-from user_interface.colors import get_white, get_black, get_red, get_blue, get_yellow
+#from user_interface.colors import get_white, get_black, get_red, get_blue, get_yellow
 
 class Launch:
     def __init__(self):

@@ -25,11 +25,12 @@ from includes.case_pawn import case_pawn
 
 class Game:
 
-    def __init__(self, number_of_player=int, size_board=int, mode=str, ia=int, save=int):
+    def __init__(self, number_of_player, size_board, mode, ia, save):
         self.__cpt = 0
         self.__onScreenSurface = None
         self.__size_board = size_board
         self.__grid = []
+        self.__running = None
         self.set_first_grid()
         self.__ia = ia
         if self.__ia == 1:
@@ -426,14 +427,14 @@ class Game:
         self.__onScreenSurface.blit(self.__tableSurface, (x, y))
 
         # Attendez pour fermer la fenêtre
-        running = True
-        while running:
+        self.__running = True
+        while self.__running:
             if int(self.__network_player) == self.__current_player or self.__network == False:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        running = False
+                        self.__running = False
                     elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-                        running = False
+                        self.__running = False
 
                     if event.type == pygame.VIDEORESIZE:
                         windowSize = event.size
@@ -590,27 +591,50 @@ class Game:
         font_interface__L = pygame.font.Font("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf", 45)
         font_interface__M = pygame.font.Font("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf", 20)
         background_image = pygame.image.load("user_interface/image/launch/background.jpg")
+        button_width = 300
+        button_height = 100
+        button_small_width = 200
+        button_small_height = 100
+        x_initial = 300
+        y_initial = 960
+        x_small_initial = 50
+        y_small_initial = 20
+        space = 200
         self.__tableSurface.fill(get_black())
-        Button(
-            self.__onScreenSurface, 1200, 730, 200, 100, text='Save',
+        button_save = Button(
+            self.__onScreenSurface, x_initial, y_initial, button_width, button_height, text='Save',
             margin=25, textColour=get_white(), inactiveColour=get_red(), pressedColour=get_white(),
             radius=5, font=font_interface__L,
             textVAlign='bottom', onClick=lambda: (self.sauvegarde())
-        )
+            )
 
-        Button(
-            self.__onScreenSurface, 1200, 470, 200, 100, text='Back', margin=25, textColour=get_white(),
+        button_back = Button(
+            self.__onScreenSurface, x_initial + (button_width+space), y_initial, button_width, button_height, text='Back', margin=25, textColour=get_white(),
             inactiveColour=get_red(), pressedColour=get_white(),
             radius=5, font=font_interface__L,
             textVAlign='bottom', onClick=lambda: (self.back())
-        )
+            )
 
-        Button(
-            self.__onScreenSurface, 1200, 600, 200, 100, text='Pause', margin=25, textColour=get_white(),
+        button_mute = Button(
+            self.__onScreenSurface, x_initial + 2*(button_width+space), y_initial, button_width, button_height,text='Mute', margin=25, textColour=get_white(),
             inactiveColour=get_red(), pressedColour=get_white(),
             radius=5, font=font_interface__L,
-            textVAlign='bottom', onClick=lambda: (self.pause())
-        )
+            textVAlign='bottom', onClick=lambda: (self.mute())
+            )
+        button_quit = Button(
+            self.__onScreenSurface, x_small_initial, y_small_initial, button_small_width, button_small_height, text='Quit', margin=25, textColour=get_white(),
+            inactiveColour=get_red(), pressedColour=get_white(),
+            radius=5, font=font_interface__L,
+            textVAlign='bottom', onClick=lambda: (self.exit())
+            )
+        
+        button_settings = Button(
+            self.__onScreenSurface, x_small_initial + 1630, y_small_initial, button_small_width, button_small_height, text='Settings', margin=25, textColour=get_white(),
+            inactiveColour=get_red(), pressedColour=get_white(),
+            radius=5, font=font_interface__L,
+            textVAlign='bottom', onClick=lambda: (self.exit())
+            )
+
         for i in range(len(self.__grid)):
             for j in range(len(self.__grid) // 2 + 1):
 
@@ -669,7 +693,7 @@ class Game:
             text_surface = font_interface__M.render(text, True, get_white())
             self.__onScreenSurface.blit(text_surface, (100, 100 + (i * 50)))
             zone_current_player = Button(
-                self.__onScreenSurface, 1180, 140, 350, 100, text='Current Player',
+                self.__onScreenSurface, (x_initial + (button_width+space))-20, 20, button_width+50, button_height, text='Current Player',
                 margin=25, textColour=get_white(), inactiveColour=case_pawn(False, self.__current_player).color(),
                 pressedColour=get_white(),
                 radius=5, font=font_interface__L,
@@ -699,7 +723,7 @@ class Game:
         mixer.music.load(filename)
         mixer.music.play(-1)
 
-    def pause(self):
+    def mute(self):
         if self.__cpt == 0:
             pygame.mixer.music.pause()
             self.__cpt += 1
@@ -707,6 +731,9 @@ class Game:
             pygame.mixer.music.unpause()
             self.__cpt -= 1
 
+    def exit(self):
+        self.__running = False
+        return self.__running
     def console(self):
         # ------------------------------
         # affichage  console
