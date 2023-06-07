@@ -15,10 +15,18 @@ TO DO 1PROJ
 - Faire IA niveau 2
 
 - Ecran de victoire, Possibilité de rejoué ou de retourner sur le plateau actuel
+- plateu de jeux
+    - Zone avec les banque
+    - changer les couleurs
+    - changer aussi couleurs du plateau
 - Menu Launch
+    - changer les couleurs
 - Menu paramêtre
+    - changer les couleurs
 - Menu réseau
-- Plateau de jeux
+    - changer les couleurs
+- Lier les fenêtre entre elles
+- faire en sorte que le boutons marche
 - Optimiser mis à jours (rafraîchissement pages)
 
 
