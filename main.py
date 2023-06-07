@@ -1,7 +1,7 @@
 # Importations des bibliothèques python
-from random import *
 import pygame
 import math
+from pygame import mixer
 import threading
 from pathlib import Path
 import pygame_widgets
@@ -11,11 +11,11 @@ import random
 # Importations des autres fichiers/classes pour le fonctionnement du code
 
 # Windows :
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_white, get_black, get_red, get_blue, \
+from user_interface.colors import get_white, get_black, get_red, get_blue, \
     get_green, get_grey, get_yellow, get_light_grey
 
-# macOS :
-# from user_interface.colors import get_white, get_black, get_red, get_blue, get_green, get_grey, get_yellow, get_light_grey
+# macOS : from user_interface.colors import get_white, get_black, get_red, get_blue, get_green, get_grey, get_yellow,
+# get_light_grey
 
 import serveur
 import client
@@ -26,6 +26,7 @@ from includes.case_pawn import case_pawn
 class Game:
 
     def __init__(self, number_of_player=int, size_board=int, mode=str, ia=int, save=int):
+        self.__cpt = 0
         self.__onScreenSurface = None
         self.__size_board = size_board
         self.__grid = []
@@ -36,6 +37,10 @@ class Game:
         else:
             self.__number_of_player = number_of_player
         self.__current_player = 1
+        self.__previousActionType = []
+        self.__previousPawnCoordinates = []
+        self.__previousBarrierCoordinates = []
+        self.__barrierCoordinate = None
         self.__pawn_coordinate = {}
         self.set___pawn_coordinate()
         self.__game_turns = 0
@@ -55,7 +60,7 @@ class Game:
                 self.chat_server_thread = threading.Thread(target=serveur.Serveur().start)
                 self.chat_server_thread.start()
 
-            if self.reseau_host == True:
+            if self.reseau_host:
                 ip = serveur.Serveur().get_ip()
                 self.player_instance = client.Player()
                 self.player_instance.start(ip)
@@ -121,12 +126,16 @@ class Game:
         else:
             self.__grid[x + 2][y] = case_barrier(True)
         self.__bank[case_pawn(False, self.__current_player).color()] -= 1
+        self.__previousBarrierCoordinates.append([(x, y), (x, y + 2)] if y % 2 == 0 else [(x, y), (x + 2, y)])
+        self.__previousActionType.append("barrier")
+        sound_thread3 = threading.Thread(target=self.play_barrier, args=("user_interface/son/barrier.mp3",))
+        sound_thread3.start()
 
     def barrier_verification(self, x, y):
         # -------------------------
-        # va verifier si les coordonnées fournis sont acceptables pour
+        # va verifier si les coordonnées fournies sont acceptables pour
         # poser une barrière, va verifier le contenu en banque
-        # puis regarde la direction puis que le placement ne soit pas
+        # puis regarde la direction pour que le placement ne soit pas
         # à la limite du plateau et enfin verifie la 2eme barrière
         # -------------------------
 
@@ -138,16 +147,18 @@ class Game:
 
         if self.__bank[case_pawn(False, self.__current_player).color()] > 0:
             if self.__size_board * 2 - 2 in (
-            x, y):  # verifie que le joueur n'est pas cliquer dans les case tout en bas ou tout a droite
+                    x, y):  # verifie que le joueur n'est pas cliquer dans les case tout en bas ou tout a droite
                 print("false derniere ligne")
                 return False
             if self.__grid[y][x].get_barrier() == 0:  # si la position donner est vide alors on passe a la suite
                 if directions == "horizontal":
                     return self.__grid[y + 2][
-                        x].get_barrier() == 0  # verifie 2 case apres si elle est vide (car le coin compt comme une case)
+                               x].get_barrier() == 0  # vérifie 2 case apres si elle est vide (car le coin compte comme une
+                    # case)
                 else:
                     return self.__grid[y][
-                        x + 2].get_barrier() == 0  # verifie 2 case en dessous si elle est vide (car le coin compt comme une case)
+                               x + 2].get_barrier() == 0  # vérifie 2 case en dessous si elle est vide (car le coin compte
+                    # comme une case)
         else:
             print("false bank")
             return False
@@ -156,8 +167,8 @@ class Game:
         # ----------------------------------
         # pawn vérification
         # va vérifier si les coordonnées fournies sont acceptables pour
-        # poser un pion selon les règles du jeu et le joueur en cour
-        # crée les variables des coordonnées des position possible ainsi que les barrières possibles
+        # poser un pion selon les règles du jeu et le joueur en cours
+        # crée les variables des coordonnées des positions possibles ainsi que les barrières possibles
         # vérifie selon la coordonnée qu'aucune barrière n'entrave son chemin
         # va vérifier si le saut de joueur et possible en prenant en compte les barrières
         # va appeler une fonction supplémentaire pour vérifier les diagonales
@@ -167,35 +178,35 @@ class Game:
               self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][1]]
         possibleCase = (
             [0, 2], [2, 0], [0, -2], [-2, 0], [-2, 2], [2, 2], [2, -2], [-2, -2], [0, 4], [4, 0], [0, -4], [-4, 0])
-        possibleCaseBarrier = ([0, 1], [1, 0], [0, -1], [-1, 0], [0, 3], [3, 0], [0, -3], [-3, 0])
+        possiblecase_barrier = ([0, 1], [1, 0], [0, -1], [-1, 0], [0, 3], [3, 0], [0, -3], [-3, 0])
         case = [co[0] - y, co[1] - x]
 
         if case in possibleCase:
             index = possibleCase.index(case)
-            if self.__grid[y][x].get_pawn() == False:
+            if not self.__grid[y][x].get_pawn():
 
-                if index <= 3:  # verrif des 4 case proche N S E W
-                    if self.__grid[co[0] - possibleCaseBarrier[index][0]][
-                        co[1] - possibleCaseBarrier[index][1]].get_barrier() == False:
+                if index <= 3:  # vérification des 4 case proche N S E W
+                    if not self.__grid[co[0] - possiblecase_barrier[index][0]][
+                        co[1] - possiblecase_barrier[index][1]].get_barrier():
                         return True
 
-                elif index > 7:  # verrif du saut de joueur
-                    if self.__grid[co[0] - possibleCaseBarrier[index - 8][0]][
-                        co[1] - possibleCaseBarrier[index - 8][1]].get_barrier() == False:
+                elif index > 7:  # vérification du saut de joueur
+                    if not self.__grid[co[0] - possiblecase_barrier[index - 8][0]][
+                        co[1] - possiblecase_barrier[index - 8][1]].get_barrier():
                         if self.__grid[co[0] - possibleCase[index - 8][0]][
-                            co[1] - possibleCase[index - 8][1]].get_pawn() == True:
-                            if self.__grid[co[0] - possibleCaseBarrier[index - 4][0]][
-                                co[1] - possibleCaseBarrier[index - 4][1]].get_barrier() == False:
+                            co[1] - possibleCase[index - 8][1]].get_pawn():
+                            if not self.__grid[co[0] - possiblecase_barrier[index - 4][0]][
+                                co[1] - possiblecase_barrier[index - 4][1]].get_barrier():
                                 return True
 
-                else:  # verrif diagonal
+                else:  # vérification diagonales
                     return self.pawn_verification_diagonal(index) == True
         return False
 
     def pawn_verification_diagonal(self, direction):
         # ----------------------------------
         # aide pour pawnVerification
-        # fonction qui permet de vérifier les possibilitées de diagonale
+        # fonction qui permet de vérifier les possibilités de diagonale
         # selon l'indice donner la direction NE SE SO NO
         # puis va 2 vérifications pour savoirs quel pion est normalement passable
         # va vérifier selon ce dernier si des barrières n'entravent pas le chemin
@@ -217,16 +228,16 @@ class Game:
             check2 = "ouest"
 
         if check1 == "nord":
-            if self.__grid[co[0] - 1][co[1]].get_barrier() == False:
-                if self.__grid[co[0] - 2][co[1]].get_pawn() == True:
+            if not self.__grid[co[0] - 1][co[1]].get_barrier():
+                if self.__grid[co[0] - 2][co[1]].get_pawn():
                     if co[0] == 2:
                         pass
                     elif self.__grid[co[0] - 3][co[1]].get_barrier() == True or self.__grid[co[0] - 4][
                         co[1]].get_pawn() == True:
                         nord = True
         else:
-            if self.__grid[co[0] + 1][co[1]].get_barrier() == False:
-                if self.__grid[co[0] + 2][co[1]].get_pawn() == True:
+            if not self.__grid[co[0] + 1][co[1]].get_barrier():
+                if self.__grid[co[0] + 2][co[1]].get_pawn():
                     if co[0] == len(self.__grid) - 3:
                         pass
                     elif self.__grid[co[0] + 3][co[1]].get_barrier() == True or self.__grid[co[0] + 4][
@@ -234,54 +245,54 @@ class Game:
                         sud = True
 
         if check2 == "est":
-            if self.__grid[co[0]][co[1] + 1].get_barrier() == False:
-                if self.__grid[co[0]][co[1] + 2].get_pawn() == True:
+            if not self.__grid[co[0]][co[1] + 1].get_barrier():
+                if self.__grid[co[0]][co[1] + 2].get_pawn():
                     if co[1] == len(self.__grid) - 3:
                         pass
                     elif self.__grid[co[0]][co[1] + 3].get_barrier() == True or self.__grid[co[0]][
                         co[1] + 4].get_pawn() == True:
                         est = True
         else:
-            if self.__grid[co[0]][co[1] - 1].get_barrier() == False:
-                if self.__grid[co[0]][co[1] - 2].get_pawn() == True:
+            if not self.__grid[co[0]][co[1] - 1].get_barrier():
+                if self.__grid[co[0]][co[1] - 2].get_pawn():
                     if co[1] == 2:
                         pass
                     elif self.__grid[co[0]][co[1] - 3].get_barrier() == True or self.__grid[co[0]][
                         co[1] - 4].get_pawn() == True:
                         ouest = True
         if direction == 6:
-            if nord == True:
-                if self.__grid[co[0] - 2][co[1] + 1].get_barrier() == False:
+            if nord:
+                if not self.__grid[co[0] - 2][co[1] + 1].get_barrier():
                     return True
-            if est == True:
-                if self.__grid[co[0] - 1][co[1] + 2].get_barrier() == False:
+            if est:
+                if not self.__grid[co[0] - 1][co[1] + 2].get_barrier():
                     return True
         elif direction == 7:
-            if sud == True:
-                if self.__grid[co[0] + 2][co[1] + 1].get_barrier() == False:
+            if sud:
+                if not self.__grid[co[0] + 2][co[1] + 1].get_barrier():
                     return True
-            if est == True:
-                if self.__grid[co[0] + 1][co[1] + 2].get_barrier() == False:
+            if est:
+                if not self.__grid[co[0] + 1][co[1] + 2].get_barrier():
                     return True
         elif direction == 4:
-            if sud == True:
-                if self.__grid[co[0] + 2][co[1] - 1].get_barrier() == False:
+            if sud:
+                if not self.__grid[co[0] + 2][co[1] - 1].get_barrier():
                     return True
-            if ouest == True:
-                if self.__grid[co[0] + 1][co[1] - 2].get_barrier() == False:
+            if ouest:
+                if not self.__grid[co[0] + 1][co[1] - 2].get_barrier():
                     return True
         else:
-            if nord == True:
-                if self.__grid[co[0] - 2][co[1] - 1].get_barrier() == False:
+            if nord:
+                if not self.__grid[co[0] - 2][co[1] - 1].get_barrier():
                     return True
-            if ouest == True:
-                if self.__grid[co[0] - 1][co[1] - 2].get_barrier() == False:
+            if ouest:
+                if not self.__grid[co[0] - 1][co[1] - 2].get_barrier():
                     return True
         return False
 
     def set___pawn_coordinate(self):
         # -------------------------
-        # va set la variable self.__pawn_coordinate : un dictionnaire qui a se clé la couleur du joueur
+        # va set la variable self.__pawn_coordinate : un dictionnaire qui en clé la couleur du joueur
         # et en valeur ses coordonnées sous forme de liste
         # la fonction est adaptée si les joueurs sont 2 ou 4
         # -------------------------
@@ -304,10 +315,92 @@ class Game:
         # X et Y fournies
         # puis va modifier la variable self.__pawn_coordinate pour l'adapter
         # -------------------------
+        self.__previousPawnCoordinates.append(dict(self.__pawn_coordinate))
         self.__grid[x][y] = case_pawn(True, self.__current_player)
         self.__grid[self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][0]][
             self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][1]] = case_pawn(False, 0)
         self.__pawn_coordinate[case_pawn(False, self.__current_player).color()] = [x, y]
+        self.__previousActionType.append("pawn")
+        sound_thread2 = threading.Thread(target=self.play_pop, args=("user_interface/son/pawn.mp3",))
+        sound_thread2.start()
+
+    def getColorNumber(self, color):
+        # Cette méthode renvoie le numéro correspondant à la couleur du joueur
+        if color == "blue":
+            return 1
+        elif color == "red":
+            return 2
+        elif color == "green":
+            return 3
+        elif color == "yellow":
+            return 4
+        else:
+            return 0
+
+    def back(self):
+        if len(self.__previousActionType) == 0:
+            pass
+        else:
+            if self.__ia == 0:
+                last_action_type = self.__previousActionType.pop()
+
+                if last_action_type == "pawn":
+                    previous_pawn_coordinates = self.__previousPawnCoordinates.pop()
+                    for color, coordinates in self.__pawn_coordinate.items():
+                        if color in previous_pawn_coordinates:
+                            x, y = coordinates
+                            self.__grid[x][y] = case_pawn(False, 0)  # Remplace la case par une case vide
+                            prev_x, prev_y = previous_pawn_coordinates[color]
+                            self.__grid[prev_x][prev_y] = case_pawn(True, self.getColorNumber(
+                                color))  # Restaure la case précédente
+                    self.__pawn_coordinate = previous_pawn_coordinates
+
+                elif last_action_type == "barrier":
+                    previous_barrier_coordinates = self.__previousBarrierCoordinates.pop()
+                    for coordinates in previous_barrier_coordinates:
+                        x, y = coordinates
+                        self.__grid[x][y] = case_barrier(False)  # Remplace la case par une case vide
+                    self.__barrier_coordinate = previous_barrier_coordinates
+
+                if self.__current_player > 1:
+                    self.__current_player -= 1
+                    if last_action_type == "barrier":
+                        self.__bank[case_pawn(False, self.__current_player).color()] += 1
+                else:
+                    self.__current_player = self.__number_of_player
+                    if last_action_type == "barrier":
+                        self.__bank[case_pawn(False, self.__current_player).color()] += 1
+
+            if self.__ia == 1:
+                for i in range(2):
+                    last_action_type = self.__previousActionType.pop()
+
+                    if last_action_type == "pawn":
+                        previous_pawn_coordinates = self.__previousPawnCoordinates.pop()
+                        for color, coordinates in self.__pawnCoordinate.items():
+                            if color in previous_pawn_coordinates:
+                                x, y = coordinates
+                                self.__grid[x][y] = case_pawn(False, 0)  # Remplace la case par une case vide
+                                prev_x, prev_y = previous_pawn_coordinates[color]
+                                self.__grid[prev_x][prev_y] = case_pawn(True, self.getColorNumber(
+                                    color))  # Restaure la case précédente
+                        self.__pawnCoordinate = previous_pawn_coordinates
+
+                    elif last_action_type == "barrier":
+                        previous_barrier_coordinates = self.__previousBarrierCoordinates.pop()
+                        for coordinates in previous_barrier_coordinates:
+                            x, y = coordinates
+                            self.__grid[x][y] = case_barrier(False)  # Remplace la case par une case vide
+                        self.__barrierCoordinate = previous_barrier_coordinates
+
+                    if self.__current_player > 1:
+                        self.__current_player -= 1
+                        if last_action_type == "barrier":
+                            self.__bank[case_pawn(False, self.__current_player).color()] += 1
+                    else:
+                        self.__current_player = self.__number_of_player
+                        if last_action_type == "barrier":
+                            self.__bank[case_pawn(False, self.__current_player).color()] += 1
 
     def game_board(self):
         # -------------------------
@@ -319,6 +412,11 @@ class Game:
         pygame.display.set_caption("QUORIDOR")
         self.__onScreenSurface = pygame.display.set_mode(windowSize, pygame.FULLSCREEN | pygame.RESIZABLE)
         size = self.__size_board * 75 - 25
+
+        mixer.init()
+
+        sound_thread = threading.Thread(target=self.play_sound, args=("user_interface/son/bg.mp3",))
+        sound_thread.start()
 
         # Surface du plateau
         tableSurfaceSize = ((self.__size_board * 75) - 25, (self.__size_board * 75) - 25)
@@ -334,6 +432,8 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
+                    elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+                        running = False
 
                     if event.type == pygame.VIDEORESIZE:
                         windowSize = event.size
@@ -345,8 +445,8 @@ class Game:
 
                     clicx = pygame.mouse.get_pos()[0]
                     clicy = pygame.mouse.get_pos()[1]
-                    if clicx >= x and clicx <= x + size:
-                        if clicy >= y and clicy <= y + size:
+                    if x <= clicx <= x + size:
+                        if y <= clicy <= y + size:
                             caseX = (clicx - x) / 75
                             caseY = (clicy - y) / 75
                             caseFinalX = self.case_clicked(caseX, caseY)[0]
@@ -354,7 +454,7 @@ class Game:
 
                             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] == True:
                                 self.game_turn(caseFinalX, caseFinalY)
-                                if self.__network == True:
+                                if self.__network:
                                     message = f"{caseFinalX},{caseFinalY}"
                                     print("le message est : ", message)
                                     self.player_instance.client_send(message)
@@ -392,7 +492,7 @@ class Game:
                         caseX = random.randint(0, self.__size_board * 2 - 2)
                         while caseY % 2 != 0:
                             caseY = random.randint(0, self.__size_board * 2 - 2)
-                    if self.pawn_verification(caseX, caseY) == True:
+                    if self.pawn_verification(caseX, caseY):
                         result = 1
                     else:
                         caseX = random.randint(0, self.__size_board * 2 - 2)
@@ -402,7 +502,7 @@ class Game:
                     while caseX % 2 == 0 and caseY % 2 == 0:
                         caseX = random.randint(0, self.__size_board * 2 - 2)
                         caseY = random.randint(0, self.__size_board * 2 - 2)
-                    if self.barrier_verification(caseX, caseY) == True:
+                    if self.barrier_verification(caseX, caseY):
                         result = 1
                     else:
                         caseX = random.randint(0, self.__size_board * 2 - 2)
@@ -445,7 +545,7 @@ class Game:
         if (y - decimalY) > 0.6666:
             caseY += 1
 
-        return (caseX, caseY)
+        return caseX, caseY
 
     def game_turn(self, x, y):
         # -------------------------
@@ -462,7 +562,7 @@ class Game:
                     self.barrier_placement(y, x)
                     self.change_player()
         else:
-            if self.barrier_verification(x, y) == True:
+            if self.barrier_verification(x, y):
                 self.barrier_placement(y, x)
                 self.change_player()
         self.verify_victory()
@@ -491,18 +591,32 @@ class Game:
         font_interface__M = pygame.font.Font("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf", 20)
         background_image = pygame.image.load("user_interface/image/launch/background.jpg")
         self.__tableSurface.fill(get_black())
-        button_save = Button(
-            self.__onScreenSurface, 1400, 840, 200, 100, text='Save',
+        Button(
+            self.__onScreenSurface, 1200, 730, 200, 100, text='Save',
             margin=25, textColour=get_white(), inactiveColour=get_red(), pressedColour=get_white(),
             radius=5, font=font_interface__L,
             textVAlign='bottom', onClick=lambda: (self.sauvegarde())
+        )
+
+        Button(
+            self.__onScreenSurface, 1200, 470, 200, 100, text='Back', margin=25, textColour=get_white(),
+            inactiveColour=get_red(), pressedColour=get_white(),
+            radius=5, font=font_interface__L,
+            textVAlign='bottom', onClick=lambda: (self.back())
+        )
+
+        Button(
+            self.__onScreenSurface, 1200, 600, 200, 100, text='Pause', margin=25, textColour=get_white(),
+            inactiveColour=get_red(), pressedColour=get_white(),
+            radius=5, font=font_interface__L,
+            textVAlign='bottom', onClick=lambda: (self.pause())
         )
         for i in range(len(self.__grid)):
             for j in range(len(self.__grid) // 2 + 1):
 
                 if i % 2 == 0:  # si la ligne est paire on va placer une case pion puis une case barrier vertical
 
-                    if self.__grid[i][j * 2].get_pawn() == True:
+                    if self.__grid[i][j * 2].get_pawn():
                         if self.__grid[i][j * 2].get_player() == 1:
                             pygame.draw.rect(self.__tableSurface, get_blue(), pygame.Rect(j * 75, i / 2 * 75, 50, 50))
                         elif self.__grid[i][j * 2].get_player() == 2:
@@ -514,7 +628,7 @@ class Game:
                             pygame.draw.rect(self.__tableSurface, get_yellow(),
                                              pygame.Rect(j * 75, i / 2 * 75, 50, 50))
                     else:
-                        if self.pawn_verification(j * 2, i) == True:
+                        if self.pawn_verification(j * 2, i):
                             if self.__current_player == 1:
                                 pygame.draw.rect(self.__tableSurface, get_light_grey(),
                                                  pygame.Rect(j * 75, i / 2 * 75, 50, 50))
@@ -532,7 +646,7 @@ class Game:
                             pygame.draw.rect(self.__tableSurface, get_white(), pygame.Rect(j * 75, i / 2 * 75, 50, 50))
 
                     if j != len(self.__grid) // 2:
-                        if self.__grid[i][j * 2 + 1].get_barrier() == True:
+                        if self.__grid[i][j * 2 + 1].get_barrier():
                             pygame.draw.rect(self.__tableSurface, get_black(),
                                              pygame.Rect(j * 75 + 50, i / 2 * 75, 25, 50))
                         else:
@@ -540,7 +654,7 @@ class Game:
                                              pygame.Rect(j * 75 + 50, i / 2 * 75, 25, 50))
 
                 else:
-                    if self.__grid[i][j * 2].get_barrier() == True:
+                    if self.__grid[i][j * 2].get_barrier():
                         pygame.draw.rect(self.__tableSurface, get_black(),
                                          pygame.Rect(j * 75, i / 2 * 75 + 12.5, 50, 25))
                     else:
@@ -555,7 +669,7 @@ class Game:
             text_surface = font_interface__M.render(text, True, get_white())
             self.__onScreenSurface.blit(text_surface, (100, 100 + (i * 50)))
             zone_current_player = Button(
-                self.__onScreenSurface, 1400, 140, 350, 100, text='Current Player',
+                self.__onScreenSurface, 1180, 140, 350, 100, text='Current Player',
                 margin=25, textColour=get_white(), inactiveColour=case_pawn(False, self.__current_player).color(),
                 pressedColour=get_white(),
                 radius=5, font=font_interface__L,
@@ -570,6 +684,29 @@ class Game:
 
         pygame.display.flip()
 
+    def play_pop(self, filename):
+        mixer.init()
+        sound = mixer.Sound(filename)
+        sound.play()
+
+    def play_barrier(self, filename):
+        mixer.init()
+        sound = mixer.Sound(filename)
+        sound.play()
+
+    def play_sound(self, filename):
+        mixer.init()
+        mixer.music.load(filename)
+        mixer.music.play(-1)
+
+    def pause(self):
+        if self.__cpt == 0:
+            pygame.mixer.music.pause()
+            self.__cpt += 1
+        elif self.__cpt == 1:
+            pygame.mixer.music.unpause()
+            self.__cpt -= 1
+
     def console(self):
         # ------------------------------
         # affichage  console
@@ -577,7 +714,7 @@ class Game:
         for i in range(len(self.__grid)):
             for j in range(len(self.__grid) // 2 + 1):
                 if i % 2 == 0:
-                    if self.__grid[i][j * 2].get_pawn() == True:
+                    if self.__grid[i][j * 2].get_pawn():
                         if self.__grid[i][j * 2].get_player() == 1:
                             print("1", end="")
                         if self.__grid[i][j * 2].get_player() == 2:
@@ -590,12 +727,12 @@ class Game:
                         print("□", end="")
 
                     if j != len(self.__grid) // 2:
-                        if self.__grid[i][j * 2 + 1].get_barrier() == True:
+                        if self.__grid[i][j * 2 + 1].get_barrier():
                             print("|", end="")
                         else:
                             print("*", end="")
                 else:
-                    if self.__grid[i][j * 2].get_barrier() == True:
+                    if self.__grid[i][j * 2].get_barrier():
                         print("-", end="")
                     else:
                         print("*", end="")
@@ -615,14 +752,14 @@ class Game:
             print("erreur sauvegarde")
             conditionFichier = False
 
-        if conditionFichier == True:
+        if conditionFichier:
             save = open(save, 'w')
             for i in range(len(self.__grid)):
                 for j in range(len(self.__grid)):
                     if i % 2 == 0 and j % 2 == 0:
                         save.write(f"{self.__grid[j][i].get_player()}")
                     else:
-                        if self.__grid[j][i].get_barrier() == True:
+                        if self.__grid[j][i].get_barrier():
                             save.write("T")
                         else:
                             save.write("F")
@@ -639,7 +776,7 @@ class Game:
             conditionFichier = True
         except:
             conditionFichier = False
-        if conditionFichier == True:
+        if conditionFichier:
             save = open(save, 'r')
             content = save.readlines()
             varGrille = (content[0])
@@ -672,15 +809,5 @@ class Game:
 
             print(self.__pawn_coordinate, type(self.__pawn_coordinate))
 
-    # def pathfinding(self):
-    #     a=0
-    #     fakeCo = self.__pawn_coordinate
-    #     fakeGrid = self.__grid
-    #     x,y=0,0
-    #     for player in range(self.__number_of_player):
-    #         while(self.verify_victory() == False or a < 1000):
-    #             a+=1
-    #             self.__grid[x][y] = case_pawn(True, player)
 
-
-Game(4, 11, "null", 0, 0)
+Game(2, 11, "null", 0, 0)
