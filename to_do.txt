@@ -14,6 +14,10 @@ TO DO 1PROJ
 - IA difficulté de autres aléatoire
 - Faire IA niveau 2
 
+DANS TOUT LES MENUS
+- Enlever les boutons, faire des zones cliquables
+- enlever les dropdown
+
 - Ecran de victoire, Possibilité de rejoué ou de retourner sur le plateau actuel
 - plateu de jeux
     - Zone avec les banque
