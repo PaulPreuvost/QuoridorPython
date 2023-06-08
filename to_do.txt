@@ -1,8 +1,12 @@
 TO DO 1PROJ
 
+Faire en sorte que les liens marche sur windows et mac
+-> Turcs qui detect le système d'exploitayion
+et qui adapte en fonction
+
+
 - Mettre musique Télio
 - pathfinding
-
 
 - Rassembler le code
 - Finir les menus ->  faire marcher les boutons /transition de page
