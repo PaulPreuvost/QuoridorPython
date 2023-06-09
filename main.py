@@ -1,26 +1,36 @@
 # Importations des bibliothèques python
-import pygame
 import math
-from pygame import mixer
+import os
+import random
+import sys
 import threading
 from pathlib import Path
+
+import pygame
 import pygame_widgets
+from pygame import mixer
 from pygame_widgets.button import Button
-import random
 
 # Importations des autres fichiers/classes pour le fonctionnement du code
 
 # Windows :
 from user_interface.colors import get_white, get_black, get_red, get_blue, \
-    get_green, get_grey, get_yellow, get_light_grey
+    get_green, get_grey, get_yellow, get_light_grey, get_blue_wp, get_blue_cyan, get_violet, get_dark_violet, get_green_wp
 
 # macOS : from user_interface.colors import get_white, get_black, get_red, get_blue, get_green, get_grey, get_yellow,
-# get_light_grey
+# get_light_grey, get_blue_cyan, get_violet, get_dark_violet, get_green_wp
 
-import serveur
-import client
+from Python_Groupe_4_Tours.QuoridorPython.includes import client, serveur
 from includes.case_barrier import case_barrier
 from includes.case_pawn import case_pawn
+
+
+def ressouce_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 
 class Game:
@@ -43,7 +53,7 @@ class Game:
         self.__previousBarrierCoordinates = []
         self.__barrierCoordinate = None
         self.__pawn_coordinate = {}
-        self.set___pawn_coordinate()
+        self.set__pawn_coordinate()
         self.__game_turns = 0
         self.__bank = None
 
@@ -120,7 +130,7 @@ class Game:
         # Y (pair ou non)
         # puis va retirer 1 barrière de la banque du joueur en cours
         # -------------------------
-
+        sound_barrier = (ressouce_path("user_interface/son/barrier.mp3"))
         self.__grid[x][y] = case_barrier(True)
         if y % 2 == 0:
             self.__grid[x][y + 2] = case_barrier(True)
@@ -129,7 +139,7 @@ class Game:
         self.__bank[case_pawn(False, self.__current_player).color()] -= 1
         self.__previousBarrierCoordinates.append([(x, y), (x, y + 2)] if y % 2 == 0 else [(x, y), (x + 2, y)])
         self.__previousActionType.append("barrier")
-        sound_thread3 = threading.Thread(target=self.play_barrier, args=("user_interface/son/barrier.mp3",))
+        sound_thread3 = threading.Thread(target=self.play_barrier, args=(sound_barrier,))
         sound_thread3.start()
 
     def barrier_verification(self, x, y):
@@ -154,11 +164,11 @@ class Game:
             if self.__grid[y][x].get_barrier() == 0:  # si la position donner est vide alors on passe a la suite
                 if directions == "horizontal":
                     return self.__grid[y + 2][
-                               x].get_barrier() == 0  # vérifie 2 case apres si elle est vide (car le coin compte comme une
+                        x].get_barrier() == 0  # vérifie 2 case apres si elle est vide (car le coin compte comme une
                     # case)
                 else:
                     return self.__grid[y][
-                               x + 2].get_barrier() == 0  # vérifie 2 case en dessous si elle est vide (car le coin compte
+                        x + 2].get_barrier() == 0  # vérifie 2 case en dessous si elle est vide (car le coin compte
                     # comme une case)
         else:
             print("false bank")
@@ -179,7 +189,7 @@ class Game:
               self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][1]]
         possibleCase = (
             [0, 2], [2, 0], [0, -2], [-2, 0], [-2, 2], [2, 2], [2, -2], [-2, -2], [0, 4], [4, 0], [0, -4], [-4, 0])
-        possiblecase_barrier = ([0, 1], [1, 0], [0, -1], [-1, 0], [0, 3], [3, 0], [0, -3], [-3, 0])
+        possible_case_barrier = ([0, 1], [1, 0], [0, -1], [-1, 0], [0, 3], [3, 0], [0, -3], [-3, 0])
         case = [co[0] - y, co[1] - x]
 
         if case in possibleCase:
@@ -187,17 +197,13 @@ class Game:
             if not self.__grid[y][x].get_pawn():
 
                 if index <= 3:  # vérification des 4 case proche N S E W
-                    if not self.__grid[co[0] - possiblecase_barrier[index][0]][
-                        co[1] - possiblecase_barrier[index][1]].get_barrier():
+                    if not self.__grid[co[0] - possible_case_barrier[index][0]][co[1] - possible_case_barrier[index][1]].get_barrier():
                         return True
 
                 elif index > 7:  # vérification du saut de joueur
-                    if not self.__grid[co[0] - possiblecase_barrier[index - 8][0]][
-                        co[1] - possiblecase_barrier[index - 8][1]].get_barrier():
-                        if self.__grid[co[0] - possibleCase[index - 8][0]][
-                            co[1] - possibleCase[index - 8][1]].get_pawn():
-                            if not self.__grid[co[0] - possiblecase_barrier[index - 4][0]][
-                                co[1] - possiblecase_barrier[index - 4][1]].get_barrier():
+                    if not self.__grid[co[0] - possible_case_barrier[index - 8][0]][co[1] - possible_case_barrier[index - 8][1]].get_barrier():
+                        if self.__grid[co[0] - possibleCase[index - 8][0]][co[1] - possibleCase[index - 8][1]].get_pawn():
+                            if not self.__grid[co[0] - possible_case_barrier[index - 4][0]][co[1] - possible_case_barrier[index - 4][1]].get_barrier():
                                 return True
 
                 else:  # vérification diagonales
@@ -291,7 +297,7 @@ class Game:
                     return True
         return False
 
-    def set___pawn_coordinate(self):
+    def set__pawn_coordinate(self):
         # -------------------------
         # va set la variable self.__pawn_coordinate : un dictionnaire qui en clé la couleur du joueur
         # et en valeur ses coordonnées sous forme de liste
@@ -316,13 +322,14 @@ class Game:
         # X et Y fournies
         # puis va modifier la variable self.__pawn_coordinate pour l'adapter
         # -------------------------
+        sound_moove = ressouce_path("user_interface/son/pawn.mp3")
         self.__previousPawnCoordinates.append(dict(self.__pawn_coordinate))
         self.__grid[x][y] = case_pawn(True, self.__current_player)
         self.__grid[self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][0]][
             self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][1]] = case_pawn(False, 0)
         self.__pawn_coordinate[case_pawn(False, self.__current_player).color()] = [x, y]
         self.__previousActionType.append("pawn")
-        sound_thread2 = threading.Thread(target=self.play_pop, args=("user_interface/son/pawn.mp3",))
+        sound_thread2 = threading.Thread(target=self.play_pop, args=(sound_moove,))
         sound_thread2.start()
 
     def getColorNumber(self, color):
@@ -415,8 +422,8 @@ class Game:
         size = self.__size_board * 75 - 25
 
         mixer.init()
-
-        sound_thread = threading.Thread(target=self.play_sound, args=("user_interface/son/bg.mp3",))
+        sound_background = ressouce_path("user_interface/son/bg.mp3")
+        sound_thread = threading.Thread(target=self.play_sound, args=(sound_background,))
         sound_thread.start()
 
         # Surface du plateau
@@ -445,11 +452,11 @@ class Game:
                         pygame.display.update()
 
                     clicx = pygame.mouse.get_pos()[0]
-                    clicy = pygame.mouse.get_pos()[1]
+                    clicy = (pygame.mouse.get_pos()[1])-100
                     if x <= clicx <= x + size:
                         if y <= clicy <= y + size:
                             caseX = (clicx - x) / 75
-                            caseY = (clicy - y) / 75
+                            caseY = ((clicy - y) / 75)
                             caseFinalX = self.case_clicked(caseX, caseY)[0]
                             caseFinalY = self.case_clicked(caseX, caseY)[1]
 
@@ -472,7 +479,7 @@ class Game:
                 print(message)
                 self.game_turn(int(message[0]), int(message[1]))
 
-            self.display(x, y)
+            self.display(x, y+100)
             clock = pygame.time.Clock()
             clock.tick(30)
 
@@ -586,54 +593,82 @@ class Game:
         # -------------------------
 
         pygame.init()
-
-        font_interface__XL = pygame.font.Font("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf", 70)
-        font_interface__L = pygame.font.Font("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf", 45)
-        font_interface__M = pygame.font.Font("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf", 20)
-        background_image = pygame.image.load("user_interface/image/launch/background.jpg")
+        load_font = ressouce_path(("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf"))
+        font_interface__XL = pygame.font.Font(load_font, 70)
+        font_interface__L = pygame.font.Font(load_font, 45)
+        font_interface__M = pygame.font.Font(load_font, 20)
+        background_image = pygame.image.load(ressouce_path("user_interface/image/board/background.jpg"))
         button_width = 300
         button_height = 100
         button_small_width = 200
         button_small_height = 100
-        x_initial = 300
-        y_initial = 960
+        x_initial = 1500
+        y_initial = 300
         x_small_initial = 50
         y_small_initial = 20
         space = 200
         self.__tableSurface.fill(get_black())
+
+        zone_bank_size = (400, 340)
+        border_radius = 2
+
+        self.__zone_bank = pygame.Surface(zone_bank_size, pygame.SRCALPHA)
+        pygame.draw.rect(self.__zone_bank, get_blue_wp(), pygame.Rect(0, 0, *zone_bank_size))
+        pygame.draw.rect(self.__zone_bank, get_black(), pygame.Rect(0, 0, *zone_bank_size), border_radius)
+
         button_save = Button(
             self.__onScreenSurface, x_initial, y_initial, button_width, button_height, text='Save',
-            margin=25, textColour=get_white(), inactiveColour=get_red(), pressedColour=get_white(),
+            margin=25,
+            textColour=get_black(),
+            inactiveColour=get_violet(),
             radius=5, font=font_interface__L,
-            textVAlign='bottom', onClick=lambda: (self.sauvegarde())
-            )
+            textVAlign='bottom',
+            onClick=lambda: (self.sauvegarde())
+        )
 
         button_back = Button(
-            self.__onScreenSurface, x_initial + (button_width+space), y_initial, button_width, button_height, text='Back', margin=25, textColour=get_white(),
-            inactiveColour=get_red(), pressedColour=get_white(),
+            self.__onScreenSurface, x_initial, y_initial + (button_height + space), button_width, button_height,
+            text='Back',
+            margin=25,
+            textColour=get_black(),
+            inactiveColour=get_violet(),
             radius=5, font=font_interface__L,
-            textVAlign='bottom', onClick=lambda: (self.back())
-            )
+            textVAlign='bottom',
+            onClick=lambda: (self.back())
+        )
 
         button_mute = Button(
-            self.__onScreenSurface, x_initial + 2*(button_width+space), y_initial, button_width, button_height,text='Mute', margin=25, textColour=get_white(),
-            inactiveColour=get_red(), pressedColour=get_white(),
+            self.__onScreenSurface, x_initial, y_initial + 2 * (button_height + space), button_width, button_height,
+            text='Mute',
+            margin=25,
+            textColour=get_black(),
+            inactiveColour=get_violet(),
             radius=5, font=font_interface__L,
-            textVAlign='bottom', onClick=lambda: (self.mute())
-            )
+            textVAlign='bottom',
+            onClick=lambda: (self.mute())
+        )
         button_quit = Button(
-            self.__onScreenSurface, x_small_initial, y_small_initial, button_small_width, button_small_height, text='Quit', margin=25, textColour=get_white(),
-            inactiveColour=get_red(), pressedColour=get_white(),
+            self.__onScreenSurface, x_small_initial, y_small_initial, button_small_width, button_small_height,
+            text='Quit',
+            margin=25,
+            textColour=get_black(),
+            inactiveColour=get_red(),
             radius=5, font=font_interface__L,
-            textVAlign='bottom', onClick=lambda: (self.exit())
-            )
-        
+            textVAlign='bottom',
+            onClick=lambda: (self.exit())
+        )
+
         button_settings = Button(
-            self.__onScreenSurface, x_small_initial + 1630, y_small_initial, button_small_width, button_small_height, text='Settings', margin=25, textColour=get_white(),
-            inactiveColour=get_red(), pressedColour=get_white(),
-            radius=5, font=font_interface__L,
-            textVAlign='bottom', onClick=lambda: (self.exit())
-            )
+            self.__onScreenSurface, x_small_initial + 1630, y_small_initial, button_small_width, button_small_height,
+            text='Settings',
+            margin=25,
+            textColour=get_black(),
+            inactiveColour=get_red(),
+            radius=5,
+            font=font_interface__L,
+            textVAlign='bottom',
+            onClick=lambda: (self.exit())
+        )
 
         for i in range(len(self.__grid)):
             for j in range(len(self.__grid) // 2 + 1):
@@ -667,41 +702,52 @@ class Game:
                                                  pygame.Rect(j * 75, i / 2 * 75, 50, 50))
 
                         else:
-                            pygame.draw.rect(self.__tableSurface, get_white(), pygame.Rect(j * 75, i / 2 * 75, 50, 50))
+                            pygame.draw.rect(self.__tableSurface, get_green_wp(), pygame.Rect(j * 75, i / 2 * 75, 50, 50))
 
                     if j != len(self.__grid) // 2:
                         if self.__grid[i][j * 2 + 1].get_barrier():
-                            pygame.draw.rect(self.__tableSurface, get_black(),
+                            pygame.draw.rect(self.__tableSurface, get_dark_violet(),
                                              pygame.Rect(j * 75 + 50, i / 2 * 75, 25, 50))
                         else:
-                            pygame.draw.rect(self.__tableSurface, get_grey(),
+                            pygame.draw.rect(self.__tableSurface, get_blue_cyan(),
                                              pygame.Rect(j * 75 + 50, i / 2 * 75, 25, 50))
 
                 else:
                     if self.__grid[i][j * 2].get_barrier():
-                        pygame.draw.rect(self.__tableSurface, get_black(),
+                        pygame.draw.rect(self.__tableSurface, get_dark_violet(),
                                          pygame.Rect(j * 75, i / 2 * 75 + 12.5, 50, 25))
                     else:
-                        pygame.draw.rect(self.__tableSurface, get_grey(),
+                        pygame.draw.rect(self.__tableSurface, get_blue_cyan(),
                                          pygame.Rect(j * 75, i / 2 * 75 + 12.5, 50, 25))
                     if j != len(self.__grid) // 2:
-                        pygame.draw.rect(self.__tableSurface, get_black(),
+                        pygame.draw.rect(self.__tableSurface, get_dark_violet(),
                                          pygame.Rect(j * 75 + 50, i / 2 * 75 + 12.5, 25, 25))
 
+        title_text = font_interface__XL.render("Zone Bank", True, get_white())
+        title_text_outline = font_interface__XL.render("Zone Bank", True, get_black())
+
+        self.__zone_bank.blit(title_text_outline, (33 + 2, 20 + 2))
+        self.__zone_bank.blit(title_text, (33, 20))
+
         for i in range(1, self.__number_of_player + 1):
-            text = "bank " + case_pawn(False, i).color() + " " + str(self.__bank[case_pawn(False, i).color()]) + " !"
+            text = str(case_pawn(False, i).color()).capitalize() + " player " + "have " + str(self.__bank[case_pawn(False, i).color()]) + " barrier"
             text_surface = font_interface__M.render(text, True, get_white())
-            self.__onScreenSurface.blit(text_surface, (100, 100 + (i * 50)))
-            zone_current_player = Button(
-                self.__onScreenSurface, (x_initial + (button_width+space))-20, 20, button_width+50, button_height, text='Current Player',
-                margin=25, textColour=get_white(), inactiveColour=case_pawn(False, self.__current_player).color(),
-                pressedColour=get_white(),
-                radius=5, font=font_interface__L,
-                textVAlign='bottom'
-            )
+            self.__zone_bank.blit(text_surface, (50, 80 + (i * 50)))
+
+        zone_current_player = Button(
+            self.__onScreenSurface, 100, 720, button_width + 50, button_height,
+            text='Current Player',
+            margin=25,
+            textColour=get_white(),
+            inactiveColour=case_pawn(False, self.__current_player).color(),
+            pressedColour=get_white(),
+            radius=5, font=font_interface__L,
+            textVAlign='bottom'
+        )
 
         self.__onScreenSurface.blit(background_image, (0, 0))
         self.__onScreenSurface.blit(self.__tableSurface, (x, y))
+        self.__onScreenSurface.blit(self.__zone_bank, (75, 300))
 
         pygame_widgets.update(pygame.event.get())
         pygame.display.update()
@@ -734,6 +780,7 @@ class Game:
     def exit(self):
         self.__running = False
         return self.__running
+
     def console(self):
         # ------------------------------
         # affichage  console
@@ -837,4 +884,4 @@ class Game:
             print(self.__pawn_coordinate, type(self.__pawn_coordinate))
 
 
-Game(2, 11, "null", 0, 0)
+Game(4, 11, "null", 0, 0)

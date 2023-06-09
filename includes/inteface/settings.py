@@ -27,9 +27,9 @@ class Settings:
         self.__onScreenSurface = pygame.display.set_mode(windowSize, pygame.FULLSCREEN | pygame.RESIZABLE)
 
         # Charger l'image de l'arrière-plan
-        background_image = pygame.image.load("../../user_interface/image/launch/background.jpg")
+        background_image = pygame.image.load("../../user_interface/image/settings/background.jpg")
         # Charger l'image Titre
-        image_title = pygame.image.load("../../user_interface/image/launch/titre.png")
+        image_title = pygame.image.load("../../user_interface/image/settings/titre.png")
         image_rect = image_title.get_rect(center=(windowSize[0] // 2, 100))
 
         font_interface__XL = pygame.font.Font("../../user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf", 70)
