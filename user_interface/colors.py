@@ -19,7 +19,7 @@ def get_blue():
 
 
 def get_green():
-    green = (0, 255, 0)
+    green = (0, 200, 0)
     return green
 
 
@@ -29,7 +29,7 @@ def get_grey():
 
 
 def get_yellow():
-    yellow = (255, 255, 0)
+    yellow = (255, 190, 0)
     return yellow
 
 

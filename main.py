@@ -14,15 +14,16 @@ from pygame_widgets.button import Button
 # Importations des autres fichiers/classes pour le fonctionnement du code
 
 # Windows :
-from user_interface.colors import get_white, get_black, get_red, get_blue, \
-    get_green, get_grey, get_yellow, get_light_grey, get_blue_wp, get_blue_cyan, get_violet, get_dark_violet, get_green_wp
+from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_white, get_black, get_red, get_blue, get_green, get_grey, get_yellow, get_light_grey, get_blue_wp, get_blue_cyan, get_violet, get_dark_violet, get_green_wp
 
 # macOS : from user_interface.colors import get_white, get_black, get_red, get_blue, get_green, get_grey, get_yellow,
 # get_light_grey, get_blue_cyan, get_violet, get_dark_violet, get_green_wp
 
 from Python_Groupe_4_Tours.QuoridorPython.includes import client, serveur
-from includes.case_barrier import case_barrier
-from includes.case_pawn import case_pawn
+from Python_Groupe_4_Tours.QuoridorPython.includes.case_barrier import case_barrier
+from Python_Groupe_4_Tours.QuoridorPython.includes.case_pawn import case_pawn
+
+
 
 
 def ressouce_path(relative_path):
@@ -88,7 +89,7 @@ class Game:
                 self.__network_player = self.player_instance.client_receive()
         self.bank()
         if self.__save == 1:
-            self.lireSauvegarde()
+            self.load_save()
         self.game_board()
         # self.console()
 
@@ -332,7 +333,7 @@ class Game:
         sound_thread2 = threading.Thread(target=self.play_pop, args=(sound_moove,))
         sound_thread2.start()
 
-    def getColorNumber(self, color):
+    def get_color_number(self, color):
         # Cette méthode renvoie le numéro correspondant à la couleur du joueur
         if color == "blue":
             return 1
@@ -359,7 +360,7 @@ class Game:
                             x, y = coordinates
                             self.__grid[x][y] = case_pawn(False, 0)  # Remplace la case par une case vide
                             prev_x, prev_y = previous_pawn_coordinates[color]
-                            self.__grid[prev_x][prev_y] = case_pawn(True, self.getColorNumber(
+                            self.__grid[prev_x][prev_y] = case_pawn(True, self.get_color_number(
                                 color))  # Restaure la case précédente
                     self.__pawn_coordinate = previous_pawn_coordinates
 
@@ -390,7 +391,7 @@ class Game:
                                 x, y = coordinates
                                 self.__grid[x][y] = case_pawn(False, 0)  # Remplace la case par une case vide
                                 prev_x, prev_y = previous_pawn_coordinates[color]
-                                self.__grid[prev_x][prev_y] = case_pawn(True, self.getColorNumber(
+                                self.__grid[prev_x][prev_y] = case_pawn(True, self.get_color_number(
                                     color))  # Restaure la case précédente
                         self.__pawnCoordinate = previous_pawn_coordinates
 
@@ -594,6 +595,7 @@ class Game:
 
         pygame.init()
         load_font = ressouce_path(("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf"))
+        font_interface__XXXL = pygame.font.Font(load_font, 130)
         font_interface__XL = pygame.font.Font(load_font, 70)
         font_interface__L = pygame.font.Font(load_font, 45)
         font_interface__M = pygame.font.Font(load_font, 20)
@@ -621,9 +623,10 @@ class Game:
             margin=25,
             textColour=get_black(),
             inactiveColour=get_violet(),
-            radius=5, font=font_interface__L,
-            textVAlign='bottom',
-            onClick=lambda: (self.sauvegarde())
+            radius=5,
+            font=font_interface__L,
+            textVAlign='center',
+            onClick=lambda: (self.save())
         )
 
         button_back = Button(
@@ -632,8 +635,9 @@ class Game:
             margin=25,
             textColour=get_black(),
             inactiveColour=get_violet(),
-            radius=5, font=font_interface__L,
-            textVAlign='bottom',
+            radius=5,
+            font=font_interface__L,
+            textVAlign='center',
             onClick=lambda: (self.back())
         )
 
@@ -643,8 +647,9 @@ class Game:
             margin=25,
             textColour=get_black(),
             inactiveColour=get_violet(),
-            radius=5, font=font_interface__L,
-            textVAlign='bottom',
+            radius=5,
+            font=font_interface__L,
+            textVAlign='center',
             onClick=lambda: (self.mute())
         )
         button_quit = Button(
@@ -653,8 +658,9 @@ class Game:
             margin=25,
             textColour=get_black(),
             inactiveColour=get_red(),
-            radius=5, font=font_interface__L,
-            textVAlign='bottom',
+            radius=5,
+            font=font_interface__L,
+            textVAlign='center',
             onClick=lambda: (self.exit())
         )
 
@@ -666,7 +672,7 @@ class Game:
             inactiveColour=get_red(),
             radius=5,
             font=font_interface__L,
-            textVAlign='bottom',
+            textVAlign='center',
             onClick=lambda: (self.exit())
         )
 
@@ -725,7 +731,6 @@ class Game:
 
         title_text = font_interface__XL.render("Zone Bank", True, get_white())
         title_text_outline = font_interface__XL.render("Zone Bank", True, get_black())
-
         self.__zone_bank.blit(title_text_outline, (33 + 2, 20 + 2))
         self.__zone_bank.blit(title_text, (33, 20))
 
@@ -741,13 +746,22 @@ class Game:
             textColour=get_white(),
             inactiveColour=case_pawn(False, self.__current_player).color(),
             pressedColour=get_white(),
-            radius=5, font=font_interface__L,
+            radius=5,
+            font=font_interface__L,
             textVAlign='bottom'
         )
+
+        zone_title_size = (1000, 250)
+        self.__zone_title = pygame.Surface(zone_title_size, pygame.SRCALPHA)
+        title_board = font_interface__XXXL.render("Game Board", True, get_white())
+        title_board_outline = font_interface__XXXL.render("Game Board", True, get_black())
+        self.__zone_title.blit(title_board_outline, (0 + 2, 0 + 2))
+        self.__zone_title.blit(title_board, (0, 0))
 
         self.__onScreenSurface.blit(background_image, (0, 0))
         self.__onScreenSurface.blit(self.__tableSurface, (x, y))
         self.__onScreenSurface.blit(self.__zone_bank, (75, 300))
+        self.__onScreenSurface.blit(self.__zone_title, (594, 20))
 
         pygame_widgets.update(pygame.event.get())
         pygame.display.update()
@@ -816,14 +830,14 @@ class Game:
                     print("")
         print("________________________________________")
 
-    def sauvegarde(self):
+    def save(self):
         save = Path(__file__).parent / "save.txt"
         conditionFichier = False
         try:
             open(save, 'w')
             conditionFichier = True
         except:
-            print("erreur sauvegarde")
+            print("erreur save")
             conditionFichier = False
 
         if conditionFichier:
@@ -842,7 +856,7 @@ class Game:
 
             save.close()
 
-    def lireSauvegarde(self):
+    def load_save(self):
         save = Path(__file__).parent / "save.txt"
         conditionFichier = False
         try:
