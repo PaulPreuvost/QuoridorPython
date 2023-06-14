@@ -82,6 +82,7 @@ def get_blue_wp():
     blue_wp = (51, 115, 195)
     return blue_wp
 
+
 def get_blue_cyan():
     blue_cyan = (12, 136, 194)
     return blue_cyan
