@@ -10,12 +10,12 @@ from pygame import mixer
 from pygame_widgets.button import Button
 
 from pathlib import Path
-from Python_Groupe_4_Tours.QuoridorPython.require.user_interface.colors import get_white, get_black, get_red, get_blue, \
+from user_interface.colors import get_white, get_black, get_red, get_blue, \
     get_green, get_yellow, get_light_grey, get_blue_wp, get_blue_cyan, get_violet, get_dark_violet, \
     get_green_wp
-from Python_Groupe_4_Tours.QuoridorPython.require import client, serveur
-from Python_Groupe_4_Tours.QuoridorPython.require.case_barrier import case_barrier
-from Python_Groupe_4_Tours.QuoridorPython.require.case_pawn import case_pawn
+import client, serveur
+from case_barrier import case_barrier
+from case_pawn import case_pawn
 import settings
 import launch
 import win
@@ -185,7 +185,7 @@ class Game:
         # Y (pair ou non)
         # puis va retirer 1 barrière de la banque du joueur en cours
         # -------------------------
-        sound_barrier = (ressouce_path("user_interface/son/barrier.mp3"))
+        sound_barrier = (ressouce_path("require/user_interface/son/barrier.mp3"))
         self.__grid[x][y] = case_barrier(True)
         if y % 2 == 0:
             self.__grid[x][y + 2] = case_barrier(True)
@@ -381,7 +381,7 @@ class Game:
         # X et Y fournies
         # puis va modifier la variable self.__pawn_coordinate pour l'adapter
         # -------------------------
-        sound_moove = ressouce_path("user_interface/son/pawn.mp3")
+        sound_moove = ressouce_path("require/user_interface/son/pawn.mp3")
         self.__previousPawnCoordinates.append(dict(self.__pawn_coordinate))
         self.__grid[x][y] = case_pawn(True, self.__current_player)
         self.__grid[self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][0]][
@@ -490,7 +490,7 @@ class Game:
         size = self.__size_board * 75 - 25
 
         mixer.init()
-        sound_background = ressouce_path("user_interface/son/bg.mp3")
+        sound_background = ressouce_path("require/user_interface/son/bg.mp3")
         sound_thread_background = threading.Thread(target=self.play_sound, args=(sound_background,))
         sound_thread_background .start()
 
@@ -530,6 +530,7 @@ class Game:
                                 self.game_turn(caseFinalX, caseFinalY)
                                 if self.__network:
                                     message = f"{caseFinalX},{caseFinalY}"
+                                    print("le message est : ", message)
                                     self.player_instance.client_send(message)
                                     self.display(x, y)
 
@@ -539,7 +540,9 @@ class Game:
             else:
                 self.display(x, y)
                 message = self.player_instance.client_receive()
+                print(message)
                 message = message.split(",")
+                print(message)
                 self.game_turn(int(message[0]), int(message[1]))
 
             self.display(x, y + 100)
@@ -705,13 +708,13 @@ class Game:
         # -------------------------
 
         pygame.init()
-        load_font_files = ressouce_path("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
+        load_font_files = ressouce_path("require/user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
         font_interface__XXXL = pygame.font.Font(load_font_files, 130)
         font_interface__XL = pygame.font.Font(load_font_files, 70)
         font_interface__L = pygame.font.Font(load_font_files, 45)
         font_interface__M = pygame.font.Font(load_font_files, 20)
 
-        background_image = pygame.image.load(ressouce_path("user_interface/images/background.jpg"))
+        background_image = pygame.image.load(ressouce_path("require/user_interface/images/background.jpg"))
 
         button_width = 300
         button_height = 100

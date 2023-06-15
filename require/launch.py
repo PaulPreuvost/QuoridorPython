@@ -6,7 +6,7 @@ import sys
 import game
 import settings
 
-from Python_Groupe_4_Tours.QuoridorPython.require.user_interface.colors import get_white, get_dark_violet, get_blue_cyan, \
+from user_interface.colors import get_white, get_dark_violet, get_blue_cyan, \
     get_red, get_yellow
 
 def resource_path(relative_path):
@@ -28,14 +28,14 @@ class Launch:
         self.__window_size = (1920, 1080)
 
         # Charger l'image de l'arrière-plan
-        self.__background_image = pygame.image.load(resource_path("user_interface/images/background.jpg"))
+        self.__background_image = pygame.image.load(resource_path("require/user_interface/images/background.jpg"))
 
         # Charger l'image Titre
-        self.__image_title = pygame.image.load(resource_path("user_interface/images/title.png"))
+        self.__image_title = pygame.image.load(resource_path("require/user_interface/images/title.png"))
         self.__image_rect = self.__image_title.get_rect(center=(self.__window_size[0] // 2, 100))
 
         # Chargement des polices de caractères
-        self.__font_load = resource_path("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
+        self.__font_load = resource_path("require/user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
         self.__font_interface_XL = pygame.font.Font(self.__font_load, 70)
 
         # Initialisations des tailles de widget

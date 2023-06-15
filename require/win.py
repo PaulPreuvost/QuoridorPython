@@ -5,7 +5,7 @@ import os
 import sys
 import game
 
-from Python_Groupe_4_Tours.QuoridorPython.require.user_interface.colors import get_white, get_blue_cyan, \
+from user_interface.colors import get_white, get_blue_cyan, \
     get_dark_violet
 
 
@@ -31,9 +31,9 @@ class Win:
         fps = 30  # Nombre de trames par seconde (FPS)
         clock.tick(fps)
 
-        background_image = pygame.image.load(resource_path("user_interface/images/background.jpg"))
+        background_image = pygame.image.load(resource_path("require/user_interface/images/background.jpg"))
 
-        font_load = resource_path("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
+        font_load = resource_path("require/user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
         font_interface__XXXL = pygame.font.Font(font_load, 250)
         font_interface_L = pygame.font.Font(font_load, 45)
         button_width = 250

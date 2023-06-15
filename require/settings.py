@@ -8,7 +8,7 @@ import game
 import launch
 import serveur
 
-from Python_Groupe_4_Tours.QuoridorPython.require.user_interface.colors import get_black, get_red, \
+from user_interface.colors import get_black, get_red, \
     get_white, get_dark_violet, get_blue_cyan
 
 
@@ -32,10 +32,10 @@ class Settings:
         self.__window_size = (1920, 1080)
 
         # Chargement l'image de l'arrière-plan
-        self.__background_image = pygame.image.load(resource_path("user_interface/images/background.jpg"))
+        self.__background_image = pygame.image.load(resource_path("require/user_interface/images/background.jpg"))
 
         # Chargement des polices de caractères
-        self.__font_load = resource_path("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
+        self.__font_load = resource_path("require/user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
         self.__font_interface__XXXL = pygame.font.Font(self.__font_load, 130)
         self.__font_interface_XL = pygame.font.Font(self.__font_load, 70)
         self.__font_interface__L = pygame.font.Font(self.__font_load, 45)

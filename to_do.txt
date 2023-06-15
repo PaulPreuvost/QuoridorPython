@@ -49,7 +49,7 @@ DANS TOUT LES MENUS
     - READ ME  (voir message sarah) toutes les bibiothèque
     - Technique
     - Utilisateur
-    - Read Me (voir comme ça marche)(voir message sarah) toutes les bibiothèque 
+    - Read Me (voir comme ça marche)(voir message sarah) toutes les bibiothèque
     - Repartition travaille / 1teams mis à jours (Git Hub) comment on à travailler)
     - shéma général --> plusieur
 	- shama uml
