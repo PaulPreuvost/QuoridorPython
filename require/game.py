@@ -530,7 +530,6 @@ class Game:
                                 self.game_turn(caseFinalX, caseFinalY)
                                 if self.__network:
                                     message = f"{caseFinalX},{caseFinalY}"
-                                    print("le message est : ", message)
                                     self.player_instance.client_send(message)
                                     self.display(x, y)
 
@@ -540,9 +539,7 @@ class Game:
             else:
                 self.display(x, y)
                 message = self.player_instance.client_receive()
-                print(message)
                 message = message.split(",")
-                print(message)
                 self.game_turn(int(message[0]), int(message[1]))
 
             self.display(x, y + 100)

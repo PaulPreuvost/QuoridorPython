@@ -46,10 +46,10 @@ DANS TOUT LES MENUS
 
 
 - Documentation :
-    - READ ME
+    - READ ME  (voir message sarah) toutes les bibiothèque
     - Technique
     - Utilisateur
-    - Read Me (voir comme ça marche)
+    - Read Me (voir comme ça marche)(voir message sarah) toutes les bibiothèque 
     - Repartition travaille / 1teams mis à jours (Git Hub) comment on à travailler)
     - shéma général --> plusieur
 	- shama uml
@@ -62,7 +62,7 @@ DANS TOUT LES MENUS
     - TOUT REMTTRE EN SEFL/ ORIENTE object
     - changer nom path findinf verif ça marche
     - Changer nom fonctions affichage / IP
-    - enlever tout les print VRM
+    - enlever tout les print VRM !!!!!!!!!!!!!!!!!!!!!!!!!!
     - Diviser le main --> faire un game.py
     - appeler tout dans les bonnes chose
     - verifs pas d'appel inutile
