@@ -1,48 +1,29 @@
 TO DO 1PROJ
 
-launch avant win
-
-
 Faire en sorte que les liens marche sur windows et mac
 -> Turcs qui detect le système d'exploitayion
 et qui adapte en fonction
 
-
-- pathfinding
-- faire en sorte de pouvoir choisir le nombre de barrières INIT
-
-
-- Rassembler le code
-- Finir les menus ->  faire marcher les boutons /transition de page
-- Appuie sur un bouton et ça modifie variable
-- Optimiser mis à jours (rafraîchissement pages)
+Avec Yannis : 
+-> Regler problème de bot 
+-> Et chosir si le bot se met automatiquement ou on le met manuelment 
+-> Tester client host 
+-> Debuger ordinater
+-> nombre de jouer à bugger
 
 
+Paul : 
+-> Mettre en exe 
+-> teste le exe sur mac
+-> TESTER PAS GE BUG
+-> rendre propre paramêtre game et innit géneral 
+-> Changer nom variable path_findind verif ça
+-> Changer nom fonctions affichage / IP marche 
+-> Mettre tout en orienté object 
+-> TOUT REMTTRE EN SEFL/ ORIENTE object
+-> FAIRES TOUTES LA DOC (voir le todo.txt) + READ ME (voir message sarah) 
 
-- IA difficulté de autres aléatoire
-- Faire IA niveau 2
-
-DANS TOUT LES MENUS
-- Enlever les boutons, faire des zones cliquables
-- enlever les dropdown
-- faire en sorte de pouvoir choisir le nombre de barrières boutons
-
-
-- Ecran de victoire, Possibilité de rejoué ou de retourner sur le plateau actuel
-- plateu de jeux
-    - Zone avec les banque
-    - changer les couleurs
-    - changer aussi couleurs du plateau
-- Menu Launch
-    - changer les couleurs
-- Menu paramêtre
-    - changer les couleurs
-- Menu réseau
-    - changer les couleurs
-- Lier les fenêtre entre elles
-- faire en sorte que le boutons marche
-- Optimiser mis à jours (rafraîchissement pages)
-
+- Créer code Pour pycharme/VsCode 
 
 
 - Documentation :
@@ -50,7 +31,7 @@ DANS TOUT LES MENUS
     - Technique
     - Utilisateur
     - Read Me (voir comme ça marche)(voir message sarah) toutes les bibiothèque
-    - Repartition travaille / 1teams mis à jours (Git Hub) comment on à travailler)
+    - Repartition travaille / 1teams mis à jours (Git Hub) comment on à travailler
     - shéma général --> plusieur
 	- shama uml
 	- verif pas de fautes dans tous 
