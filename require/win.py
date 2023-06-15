@@ -5,11 +5,8 @@ import os
 import sys
 import game
 
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.load_image import load_background
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.load_font import load_font
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_white, get_black, get_red, get_blue, \
-    get_green, get_grey, get_yellow, get_light_grey, get_blue_wp, get_blue_cyan, get_violet, get_dark_violet, \
-    get_green_wp
+from Python_Groupe_4_Tours.QuoridorPython.require.user_interface.colors import get_white, get_blue_cyan, \
+    get_dark_violet
 
 
 def resource_path(relative_path):
@@ -34,9 +31,9 @@ class Win:
         fps = 30  # Nombre de trames par seconde (FPS)
         clock.tick(fps)
 
-        background_image = pygame.image.load(resource_path(load_background()))
+        background_image = pygame.image.load(resource_path("user_interface/images/background.jpg"))
 
-        font_load = resource_path(load_font())
+        font_load = resource_path("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
         font_interface__XXXL = pygame.font.Font(font_load, 250)
         font_interface_L = pygame.font.Font(font_load, 45)
         button_width = 250
@@ -105,13 +102,13 @@ class Win:
 
             pygame.display.flip()
 
+    pygame.quit()
+
+    def quit(self):
         pygame.quit()
 
     def replay(self):
         self.__game_state = "Game"
-
-    def quit(self):
-        pygame.quit()
 
     def hide_widgets(self):
         self.__button_rect_play.hide()

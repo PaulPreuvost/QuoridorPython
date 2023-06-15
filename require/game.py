@@ -1,7 +1,6 @@
 # Importations des bibliothèques python
 import math
 import os
-import subprocess
 import sys
 import random
 import threading
@@ -11,20 +10,15 @@ from pygame import mixer
 from pygame_widgets.button import Button
 
 from pathlib import Path
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_white, get_black, get_red, get_blue, \
-    get_green, get_grey, get_yellow, get_light_grey, get_blue_wp, get_blue_cyan, get_violet, get_dark_violet, \
+from Python_Groupe_4_Tours.QuoridorPython.require.user_interface.colors import get_white, get_black, get_red, get_blue, \
+    get_green, get_yellow, get_light_grey, get_blue_wp, get_blue_cyan, get_violet, get_dark_violet, \
     get_green_wp
-from Python_Groupe_4_Tours.QuoridorPython.includes import client, serveur
-from Python_Groupe_4_Tours.QuoridorPython.includes.case_barrier import case_barrier
-from Python_Groupe_4_Tours.QuoridorPython.includes.case_pawn import case_pawn
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.load_image import load_background
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.load_font import load_font
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.load_sound import load_moove_sound, load_barriere_sound, \
-    load_background_music
+from Python_Groupe_4_Tours.QuoridorPython.require import client, serveur
+from Python_Groupe_4_Tours.QuoridorPython.require.case_barrier import case_barrier
+from Python_Groupe_4_Tours.QuoridorPython.require.case_pawn import case_pawn
 import settings
 import launch
 import win
-
 
 def ressouce_path(relative_path):
     try:
@@ -191,7 +185,7 @@ class Game:
         # Y (pair ou non)
         # puis va retirer 1 barrière de la banque du joueur en cours
         # -------------------------
-        sound_barrier = (ressouce_path(load_barriere_sound()))
+        sound_barrier = (ressouce_path("user_interface/son/barrier.mp3"))
         self.__grid[x][y] = case_barrier(True)
         if y % 2 == 0:
             self.__grid[x][y + 2] = case_barrier(True)
@@ -387,7 +381,7 @@ class Game:
         # X et Y fournies
         # puis va modifier la variable self.__pawn_coordinate pour l'adapter
         # -------------------------
-        sound_moove = ressouce_path(load_moove_sound())
+        sound_moove = ressouce_path("user_interface/son/pawn.mp3")
         self.__previousPawnCoordinates.append(dict(self.__pawn_coordinate))
         self.__grid[x][y] = case_pawn(True, self.__current_player)
         self.__grid[self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][0]][
@@ -496,7 +490,7 @@ class Game:
         size = self.__size_board * 75 - 25
 
         mixer.init()
-        sound_background = ressouce_path(load_background_music())
+        sound_background = ressouce_path("user_interface/son/bg.mp3")
         sound_thread_background = threading.Thread(target=self.play_sound, args=(sound_background,))
         sound_thread_background .start()
 
@@ -513,8 +507,6 @@ class Game:
             if int(self.__network_player) == self.__current_player or self.__network == False:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        self.__running = False
-                    elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                         self.__running = False
 
                     if event.type == pygame.VIDEORESIZE:
@@ -716,13 +708,13 @@ class Game:
         # -------------------------
 
         pygame.init()
-        load_font_files = ressouce_path(load_font())
+        load_font_files = ressouce_path("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
         font_interface__XXXL = pygame.font.Font(load_font_files, 130)
         font_interface__XL = pygame.font.Font(load_font_files, 70)
         font_interface__L = pygame.font.Font(load_font_files, 45)
         font_interface__M = pygame.font.Font(load_font_files, 20)
 
-        background_image = pygame.image.load(ressouce_path(load_background()))
+        background_image = pygame.image.load(ressouce_path("user_interface/images/background.jpg"))
 
         button_width = 300
         button_height = 100

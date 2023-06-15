@@ -1,21 +1,16 @@
 import sys
 import os
-import socket
-import netifaces
 import pygame
 import pygame_widgets
 from pygame_widgets.button import Button
 from pygame_widgets.dropdown import Dropdown
-import subprocess
 import game
 import launch
 import serveur
 
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_black, get_red, \
-    get_white, get_dark_violet, get_blue, get_blue_cyan
+from Python_Groupe_4_Tours.QuoridorPython.require.user_interface.colors import get_black, get_red, \
+    get_white, get_dark_violet, get_blue_cyan
 
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.load_image import load_background
-from Python_Groupe_4_Tours.QuoridorPython.user_interface.load_font import load_font
 
 
 def resource_path(relative_path):
@@ -37,10 +32,10 @@ class Settings:
         self.__window_size = (1920, 1080)
 
         # Chargement l'image de l'arrière-plan
-        self.__background_image = pygame.image.load(resource_path(load_background()))
+        self.__background_image = pygame.image.load(resource_path("user_interface/images/background.jpg"))
 
         # Chargement des polices de caractères
-        self.__font_load = resource_path(load_font())
+        self.__font_load = resource_path("user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
         self.__font_interface__XXXL = pygame.font.Font(self.__font_load, 130)
         self.__font_interface_XL = pygame.font.Font(self.__font_load, 70)
         self.__font_interface__L = pygame.font.Font(self.__font_load, 45)
@@ -552,13 +547,14 @@ class Settings:
 
             clock.tick(fps)  # Limiter le nombre de trames par seconde
 
-    pygame.display.quit()
+    pygame.quit()
 
+    def quit(self):
+        pygame.quit()
     def open_game(self):
         self.__game_state = "Game"
 
     def back(self):
         self.__game_state = "Launch"
 
-    def quit(self):
-        pygame.display.quit()
+
