@@ -112,7 +112,7 @@ class Launch:
                 button_rect_play.hide()
                 button_rect_settings.hide()
                 self.__on_screen_surface.fill(get_blue_cyan())
-                game.Game(2, 11, 1, 24, 0, False, False, False, False)
+                game.Game(2, 11, 1, 24, 0, 0, False, False, False)
 
             elif self.__game_state == "Settings":
                 button_rect_quit.hide()

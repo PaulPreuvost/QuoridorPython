@@ -1,5 +1,8 @@
 TO DO 1PROJ
 
+launch avant win
+
+
 Faire en sorte que les liens marche sur windows et mac
 -> Turcs qui detect le système d'exploitayion
 et qui adapte en fonction
@@ -56,7 +59,9 @@ DANS TOUT LES MENUS
 
 
 - Clean
+    - TOUT REMTTRE EN SEFL/ ORIENTE object
     - changer nom path findinf verif ça marche
+    - Changer nom fonctions affichage / IP
     - enlever tout les print VRM
     - Diviser le main --> faire un game.py
     - appeler tout dans les bonnes chose

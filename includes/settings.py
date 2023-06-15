@@ -9,6 +9,7 @@ from pygame_widgets.dropdown import Dropdown
 import subprocess
 import game
 import launch
+import serveur
 
 from Python_Groupe_4_Tours.QuoridorPython.user_interface.colors import get_black, get_red, \
     get_white, get_dark_violet, get_blue, get_blue_cyan
@@ -65,6 +66,8 @@ class Settings:
         self.__button_text_validate = "Enter"  # Texte du bouton Validation
         self.__zone_title_size = (1000, 250)
         self.__zone_host_ip_size = (1000, 250)
+        self.__zone_client_ip_size = (1000, 250)
+
 
         # Initialisations des paramêtres
         self.__selected_size_board = 11
@@ -72,15 +75,15 @@ class Settings:
         self.__selected_number_of_barrier = 16
         self.__selected_save = 0  # remplacer par true
         self.__selected_sound_volume = 1
+        self.__selected_computer = 0
         self.__selected_network = False
         self.__selected_network_choice = False  # Host ou client
-        self.__selected_computer = False
 
-    def get_host_ip_address(self):
-        # Obtient l'adresse IP de l'hôte
-        host_name = socket.gethostname()
-        host_ip = socket.gethostbyname(host_name)
-        return host_ip
+    # def get_host_ip_address(self):
+    #     # Obtient l'adresse IP de l'hôte
+    #     host_name = socket.gethostname()
+    #     host_ip = socket.gethostbyname(host_name)
+    #     return host_ip
 
     def supprimer(self):
         self.__run = False
@@ -204,12 +207,12 @@ class Settings:
         def select_number_of_barriere():
             self.__selected_number_of_barrier = btn_number_of_barrier.getSelected()
 
-        btn_save = Dropdown(
+        btn_launch_save = Dropdown(
             self.__on_screen_surface,
             int(self.__x_position_dropdown + 3 * (self.__button_width_dropdown + self.__space)),
             self.__y_position_dropdown,
             self.__button_width_dropdown, self.__button_height_dropdown,
-            name='Save',
+            name='Launch save',
             choices=[
                 'Yes',
                 'No',
@@ -221,7 +224,7 @@ class Settings:
             direction='down'
         )
 
-        validate_save = Button(
+        validate_launch_save = Button(
             self.__on_screen_surface,
             int(self.__x_position_validate + 3 * (self.__button_width_dropdown + self.__space)),
             self.__y_position_dropdown,
@@ -237,7 +240,7 @@ class Settings:
         )
 
         def select_save():
-            self.__selected_save = btn_save.getSelected()
+            self.__selected_save = btn_launch_save.getSelected()
 
         btn_sound = Dropdown(
             self.__on_screen_surface,
@@ -279,7 +282,7 @@ class Settings:
 
         btn_network = Dropdown(
             self.__on_screen_surface,
-            int(self.__x_position_dropdown) + 150, self.__y_position_dropdown + 100,
+            int(self.__x_position_dropdown) + 350, self.__y_position_dropdown + 100,
             self.__button_width_dropdown, self.__button_height_dropdown,
             name='Network',
             choices=[
@@ -294,7 +297,7 @@ class Settings:
         )
 
         validate_network = Button(
-            self.__on_screen_surface, int(self.__x_position_validate) + 150, self.__y_position_dropdown + 100,
+            self.__on_screen_surface, int(self.__x_position_validate) + 350, self.__y_position_dropdown + 100,
             self.__button_width_validate, self.__button_height_validate,
             text=self.__button_text_validate,
             margin=15,
@@ -311,24 +314,24 @@ class Settings:
 
         btn_network_choice = Dropdown(
             self.__on_screen_surface,
-            int(self.__x_position_dropdown + self.__button_width_dropdown + self.__space) + 150,
+            int(self.__x_position_dropdown + self.__button_width_dropdown + self.__space) + 350,
             self.__y_position_dropdown + 100,
             self.__button_width_dropdown, self.__button_height_dropdown,
-            name='Network',
+            name='Host/Client',
             choices=[
                 'Host',
                 'Client',
             ],
             borderRadius=3,
             colour=get_white(),
-            values=[False, True],
+            values=['Host', 'Client'],
             font=self.__font_interface__M,
             direction='down'
         )
 
         validate_network_choice = Button(
             self.__on_screen_surface,
-            int(self.__x_position_validate + self.__button_width_dropdown + self.__space) + 150,
+            int(self.__x_position_validate + self.__button_width_dropdown + self.__space) + 350,
             self.__y_position_dropdown + 100,
             self.__button_width_validate, self.__button_height_validate,
             text=self.__button_text_validate,
@@ -343,10 +346,24 @@ class Settings:
 
         def select_network_choice():
             self.__selected_network_choice = btn_network_choice.getSelected()
+            network_user_choice()
+        def network_user_choice():
+            if self.__selected_network_choice == 'Host':
+                self.__network_host = True
+                self.__network_client = False
+                return self.__network_host
+            elif self.__selected_network_choice == 'Client':
+                self.__network_host = False
+                self.__network_client = self.__ip_client
+                return self.__network_host
+            else:
+                self.__network_host = False
+                self.__network_client = False
+
 
         btn_computer = Dropdown(
             self.__on_screen_surface,
-            int(self.__x_position_dropdown + 2 * (self.__button_width_dropdown + self.__space)) + 150,
+            int(self.__x_position_dropdown + 2 * (self.__button_width_dropdown + self.__space)) + 350,
             self.__y_position_dropdown + 100,
             self.__button_width_dropdown, self.__button_height_dropdown,
             name='Computer',
@@ -356,14 +373,14 @@ class Settings:
             ],
             borderRadius=3,
             colour=get_white(),
-            values=[True, False],
+            values=[1, 0],
             font=self.__font_interface__M,
             direction='down'
         )
 
         validate_computer = Button(
             self.__on_screen_surface,
-            int(self.__x_position_validate + 2 * (self.__button_width_dropdown + self.__space)) + 150,
+            int(self.__x_position_validate + 2 * (self.__button_width_dropdown + self.__space)) + 350,
             self.__y_position_dropdown + 100,
             self.__button_width_validate, self.__button_height_validate,
             text=self.__button_text_validate,
@@ -406,104 +423,67 @@ class Settings:
             onClick=lambda: (self.back())
         )
 
-        button_rect_rules = Button(
+        button_rect_quit = Button(
             self.__on_screen_surface, 1600, 40,
             int(self.__button_width / 1.5), int(self.__button_height / 1.5),
-            text='Rules',
+            text='Quit',
             margin=25,
             textColour=get_white(),
-            inactiveColour=get_blue(),
+            inactiveColour=get_red(),
             radius=5,
             font=self.__font_interface_XL,
             textVAlign='center',
+            onClick=lambda: (self.quit())
         )
-        def get_network_ips():
-            network_ips = set()
-            interfaces = netifaces.interfaces()
-
-            for interface in interfaces:
-                addresses = netifaces.ifaddresses(interface)
-                if netifaces.AF_INET in addresses:
-                    ips = [addr['addr'] for addr in addresses[netifaces.AF_INET]]
-                    for ip in ips:
-                        if ip != '127.0.0.1' and validate_ip_address(ip):
-                            network_ips.add(ip)
-
-            return list(network_ips)
-
-        # Fonction pour valider une adresse IP
-        def validate_ip_address(ip):
-            try:
-                socket.inet_aton(ip)
-                return True
-            except socket.error:
-                return False
-
-        def select_ip():
-            self.__selected_ip = btn_ip.getSelected()
-            print(self.__selected_ip)
-
-        # Obtenir toutes les adresses IP sur le réseau local
-        network_ips = get_network_ips()
-
-        # Créer le dropdown avec les adresses IP comme choix
-        btn_ip = Dropdown(
-            self.__on_screen_surface,
-            int(self.__x_position_dropdown + 3 * (self.__button_width_dropdown + self.__space)) + 150,
-            self.__y_position_dropdown + 100,
-            self.__button_width_dropdown,
-            self.__button_height_dropdown,
-            name='IP Address',
-            choices=network_ips,  # Utiliser les adresses IP comme choix
-            borderRadius=3,
-            colour=get_white(),
-            font=self.__font_interface__M,
-            direction='down'
-        )
-
-        # Bouton de validation
-        validate_ip = Button(
-            self.__on_screen_surface,
-            int(self.__x_position_validate + 3 * (self.__button_width_dropdown + self.__space)) + 150,
-            self.__y_position_dropdown + 100,
-            self.__button_width_validate,
-            int(self.__button_height_validate),
-            text=self.__button_text_validate,
-            margin=15,
-            inactiveColour=get_red(),
-            pressedColour=get_black(),
-            radius=5,
-            font=self.__font_interface__M,
-            textVAlign='center',
-            onClick=lambda: select_ip()
-        )
-
-
         self.__zone_host_ip = pygame.Surface(self.__zone_host_ip_size, pygame.SRCALPHA)
-        ip_address_label = self.__font_interface__L.render("Host IP: " + self.get_host_ip_address(), True, get_white())
-        self.__zone_host_ip.blit(ip_address_label, (0, 0))
+        ip_host_label = self.__font_interface__L.render("Host Code : " + serveur.Serveur().get_code(), True, get_white())
+        self.__zone_host_ip.blit(ip_host_label, (0, 0))
 
-        while self.__run:
+        self.__zone_client_ip = pygame.Surface(self.__zone_client_ip_size, pygame.SRCALPHA)
+        ip_client_label = self.__font_interface__L.render("Client Code : ", True, get_white())
+        self.__zone_client_ip.blit(ip_client_label, (0, 0))
+        def afficher_zone_texte(x, y, largeur, hauteur, texte):
+            zone_texte = pygame.Rect(x, y, largeur, hauteur)
+            pygame.draw.rect(self.__on_screen_surface, get_white(), zone_texte)
+            pygame.draw.rect(self.__on_screen_surface, get_black(), zone_texte, 2)
+            surface_texte_ip = self.__font_interface_XL.render(texte, True, get_black())
+            texte_rect = surface_texte_ip.get_rect()
+            texte_rect.center = zone_texte.center
+            self.__on_screen_surface.blit(surface_texte_ip, texte_rect)
+
+        self.__ip_client = ""
+
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.__run = False
-                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-                    self.__run = False
+                    pygame.quit()
+                    exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        print(self.__ip_client)
+                        # Réinitialiser le texte après avoir traité les données
+                        self.__ip_client = ""
+                    elif event.key == pygame.K_BACKSPACE:
+                        self.__ip_client = self.__ip_client[:-1]
+                    else:
+                        if event.unicode in "0123456789":
+                            self.__ip_client += event.unicode
+
+
 
             # Update game state
             if self.__game_state == "Launch":
-                btn_ip.hide()
-                btn_save.hide()
+                button_rect_quit.hide()
+                btn_computer.hide()
+                btn_launch_save.hide()
                 btn_number_of_barrier.hide()
                 btn_sound.hide()
                 btn_network_choice.hide()
                 btn_size_board.hide()
                 btn_number_player.hide()
                 btn_network.hide()
-                btn_computer.hide()
-                validate_ip.hide()
-                validate_save.hide()
                 validate_computer.hide()
+                validate_launch_save.hide()
                 validate_number_of_barrier.hide()
                 validate_sound.hide()
                 validate_network.hide()
@@ -511,23 +491,23 @@ class Settings:
                 validate_number_player.hide()
                 validate_size_board.hide()
                 validate_number_player.hide()
-                button_rect_rules.hide()
                 button_rect_play.hide()
                 button_rect_back.hide()
                 self.__on_screen_surface.fill(get_blue_cyan())
                 launch.Launch().display()
 
             elif self.__game_state == "Game":
-                btn_ip.hide()
-                btn_save.hide()
+                button_rect_quit.hide()
+                btn_computer.hide()
+                btn_launch_save.hide()
                 btn_number_of_barrier.hide()
                 btn_sound.hide()
                 btn_network_choice.hide()
                 btn_size_board.hide()
                 btn_number_player.hide()
                 btn_network.hide()
-                validate_ip.hide()
-                validate_save.hide()
+                validate_computer.hide()
+                validate_launch_save.hide()
                 validate_number_of_barrier.hide()
                 validate_sound.hide()
                 validate_network.hide()
@@ -535,11 +515,18 @@ class Settings:
                 validate_number_player.hide()
                 validate_size_board.hide()
                 validate_number_player.hide()
-                button_rect_rules.hide()
                 button_rect_play.hide()
                 button_rect_back.hide()
                 self.__on_screen_surface.fill(get_blue_cyan())
-                game.Game(2, 11, 1, 24, 0, False, False, False, False)
+                game.Game(self.__selected_number_of_players,
+                          self.__selected_size_board,
+                          self.__selected_sound_volume,
+                          self.__selected_number_of_barrier,
+                          self.__selected_save,
+                          self.__selected_computer,
+                          self.__selected_network,
+                          self.__selected_network_choice,
+                          self.__ip_client)
 
             else:
                 # Dessiner les éléments sur l'écran
@@ -548,6 +535,8 @@ class Settings:
                 self.__on_screen_surface.blit(self.__zone_host_ip, (735, 700))
                 button_rect_play.draw()
                 button_rect_back.draw()
+                self.__on_screen_surface.blit(self.__zone_client_ip, (450, 510))
+                afficher_zone_texte(735, 500, 500, 70, self.__ip_client)
 
             def validate_input(text):
                 # Vérifier si le texte ne contient que des chiffres et des points
@@ -563,10 +552,13 @@ class Settings:
 
             clock.tick(fps)  # Limiter le nombre de trames par seconde
 
-        pygame.quit()
+    pygame.display.quit()
 
     def open_game(self):
         self.__game_state = "Game"
 
     def back(self):
         self.__game_state = "Launch"
+
+    def quit(self):
+        pygame.display.quit()

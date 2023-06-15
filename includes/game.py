@@ -23,6 +23,7 @@ from Python_Groupe_4_Tours.QuoridorPython.user_interface.load_sound import load_
     load_background_music
 import settings
 import launch
+import win
 
 
 def ressouce_path(relative_path):
@@ -35,7 +36,7 @@ def ressouce_path(relative_path):
 
 class Game:
 
-    def __init__(self, number_of_player, size_board, volume, number_of_barrier=40, save=0, computer=False,
+    def __init__(self, number_of_player, size_board, volume, number_of_barrier=40, save=0, computer=0,
                  network=False, host=False,
                  clients=False):
         self.__game_state = "Game"
@@ -46,7 +47,7 @@ class Game:
         self.__running = None
         self.set_first_grid()
         self.__computer = computer
-        if self.__computer == True:
+        if self.__computer == 1:
             self.__number_of_player = 2
         else:
             self.__number_of_player = number_of_player
@@ -59,6 +60,7 @@ class Game:
         self.__game_turns = 0
         self.__bank = None
         self.__volume = volume
+        self.__winner = None
 
         self.__save = save
         self.__network = False
@@ -68,7 +70,7 @@ class Game:
             self.__network = True
             if host == True:
                 self.network_host = True
-                print(serveur.Serveur().get_code()())
+                print(serveur.Serveur().get_code())
                 self.chat_server_thread = threading.Thread(target=serveur.Serveur().start)
                 self.chat_server_thread.start()
 
@@ -96,7 +98,7 @@ class Game:
         # -------------------------
         # permet de set la grille au lancement du jeu
         # va placer les pions et ajuster la taille du plateau selon
-        # la varcomputerble self.__size_board
+        # la variable self.__size_board
         # -------------------------
         for i in range(0, self.__size_board * 2, 2):
             self.__grid.append([])
@@ -168,10 +170,10 @@ class Game:
 
     def bank(self, number_barrier):
         # -------------------------
-        # permet de set la varcomputerble self.__bank qui est
+        # permet de set la variable self.__bank qui est
         # un dictionnaire de valeurs clés : couleur du joueur
         # valeur = chiffre int en valeur de barrière dans la banque du joueur
-        # la fonction est adapter pour 2 ou 4 joueur grâce a la varcomputerble
+        # la fonction est adapter pour 2 ou 4 joueur grâce a la variable
         # self.__number_of_player
         # -------------------------
         if self.__number_of_player == 4:
@@ -238,10 +240,10 @@ class Game:
         # pawn vérification
         # va vérifier si les coordonnées fournies sont acceptables pour
         # poser un pion selon les règles du jeu et le joueur en cours
-        # crée les varcomputerbles des coordonnées des positions possibles ainsi que les barrières possibles
+        # crée les variables des coordonnées des positions possibles ainsi que les barrières possibles
         # vérifie selon la coordonnée qu'aucune barrière n'entrave son chemin
         # va vérifier si le saut de joueur et possible en prenant en compte les barrières
-        # va appeler une fonction supplémentaire pour vérifier les dcomputergonales
+        # va appeler une fonction supplémentaire pour vérifier les diagonales
         # ----------------------------------
 
         co = [self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][0],
@@ -269,14 +271,14 @@ class Game:
                                 co[1] - possible_case_barrier[index - 4][1]].get_barrier():
                                 return True
 
-                else:  # vérification dcomputergonales
-                    return self.pawn_verification_dcomputergonal(index) == True
+                else:  # vérification diagonales
+                    return self.pawn_verification_diagonal(index) == True
         return False
 
-    def pawn_verification_dcomputergonal(self, direction):
+    def pawn_verification_diagonal(self, direction):
         # ----------------------------------
         # aide pour pawnVerification
-        # fonction qui permet de vérifier les possibilités de dcomputergonale
+        # fonction qui permet de vérifier les possibilités de diagonale
         # selon l'indice donner la direction NE SE SO NO
         # puis va 2 vérifications pour savoirs quel pion est normalement passable
         # va vérifier selon ce dernier si des barrières n'entravent pas le chemin
@@ -362,7 +364,7 @@ class Game:
 
     def set__pawn_coordinate(self):
         # -------------------------
-        # va set la varcomputerble self.__pawn_coordinate : un dictionnaire qui en clé la couleur du joueur
+        # va set la variable self.__pawn_coordinate : un dictionnaire qui en clé la couleur du joueur
         # et en valeur ses coordonnées sous forme de liste
         # la fonction est adaptée si les joueurs sont 2 ou 4
         # -------------------------
@@ -383,7 +385,7 @@ class Game:
         # -------------------------
         # permet de placer dans la grille 1 pion selon les coordonnées
         # X et Y fournies
-        # puis va modifier la varcomputerble self.__pawn_coordinate pour l'adapter
+        # puis va modifier la variable self.__pawn_coordinate pour l'adapter
         # -------------------------
         sound_moove = ressouce_path(load_moove_sound())
         self.__previousPawnCoordinates.append(dict(self.__pawn_coordinate))
@@ -595,23 +597,21 @@ class Game:
         # Condition de Victoire
         # -------------------------
         if self.__pawn_coordinate["blue"][0] == 0:
-            print("Victoire du joueur Bleue !")
-            print(self.__current_player - 1)
-            # subprocess.call(['python', 'win.py'])
+            self.__winner = "Blue"
+            self.__game_state = "Win"
             return True
         elif self.__pawn_coordinate["red"][0] == self.__size_board * 2 - 2:
-            print("Victoire du joueur Rouge !")
-            print(self.__current_player + 1)
-            # subprocess.call(['python', 'win.py'])
+            self.__winner = "Red"
+            self.__game_state = "Win"
             return True
         if self.__number_of_player == 4:
             if self.__pawn_coordinate["yellow"][1] == 0:
-                print("Victoire du joueur Jaune !")
-                # subprocess.call(['python', 'win.py'])
+                self.__winner = "Yellow"
+                self.__game_state = "Win"
                 return True
             elif self.__pawn_coordinate["green"][1] == self.__size_board * 2 - 2:
-                print("Victoire du joueur Vert !")
-                # subprocess.call(['python', 'win.py'])
+                self.__winner = "Green"
+                self.__game_state = "Win"
                 return True
             else:
                 return False
@@ -700,7 +700,7 @@ class Game:
 
     def change_player(self):
         # -------------------------
-        # modifie la varcomputerble self.__current_player à chaque appel de la fonction
+        # modifie la variable self.__current_player à chaque appel de la fonction
         # -------------------------
         self.__current_player += 1
         if self.__number_of_player == 4:
@@ -728,10 +728,10 @@ class Game:
         button_height = 100
         button_small_width = 200
         button_small_height = 100
-        x_initcomputerl = 1500
-        y_initcomputerl = 300
-        x_small_initcomputerl = 50
-        y_small_initcomputerl = 20
+        x_initial = 1500
+        y_initial = 300
+        x_small_inital = 50
+        y_small_initial = 20
         space = 100
         zone_bank_size = (400, 340)
         border_radius = 2
@@ -743,7 +743,7 @@ class Game:
         pygame.draw.rect(self.__zone_bank, get_black(), pygame.Rect(0, 0, *zone_bank_size), border_radius)
 
         self.__button_save = Button(
-            self.__on_screen_surface, x_initcomputerl, y_initcomputerl, button_width, button_height, text='Save',
+            self.__on_screen_surface, x_initial, y_initial, button_width, button_height, text='Save',
             margin=25,
             textColour=get_black(),
             inactiveColour=get_violet(),
@@ -754,7 +754,7 @@ class Game:
         )
 
         self.__button_rect_load = Button(
-            self.__on_screen_surface, x_initcomputerl, y_initcomputerl + (button_height + space), button_width,
+            self.__on_screen_surface, x_initial, y_initial + (button_height + space), button_width,
             button_height,
             text='Load',
             margin=25,
@@ -767,7 +767,7 @@ class Game:
         )
 
         self.__button_back = Button(
-            self.__on_screen_surface, x_initcomputerl, y_initcomputerl + 2 * (button_height + space), button_width,
+            self.__on_screen_surface, x_initial, y_initial + 2 * (button_height + space), button_width,
             button_height,
             text='Back',
             margin=25,
@@ -780,7 +780,7 @@ class Game:
         )
 
         self.__button_mute = Button(
-            self.__on_screen_surface, x_initcomputerl, y_initcomputerl + 3 * (button_height + space), button_width,
+            self.__on_screen_surface, x_initial, y_initial + 3 * (button_height + space), button_width,
             button_height,
             text='Mute',
             margin=25,
@@ -793,7 +793,7 @@ class Game:
         )
 
         self.__button_back_window = Button(
-            self.__on_screen_surface, x_small_initcomputerl, y_small_initcomputerl, button_small_width,
+            self.__on_screen_surface, x_small_inital, y_small_initial, button_small_width,
             button_small_height,
             text='Back',
             margin=25,
@@ -806,7 +806,7 @@ class Game:
         )
 
         self.__button_settings = Button(
-            self.__on_screen_surface, x_small_initcomputerl + 1630, y_small_initcomputerl, button_small_width,
+            self.__on_screen_surface, x_small_inital + 1630, y_small_initial, button_small_width,
             button_small_height,
             text='Settings',
             margin=25,
@@ -915,6 +915,12 @@ class Game:
             self.hide_widgets()
             settings.Settings().display()
 
+        elif self.__game_state == "Win":
+            self.stop_music()
+            self.__on_screen_surface.fill(get_blue_cyan())
+            self.hide_widgets()
+            win.Win(self.__winner).display()
+
         else:
             self.__on_screen_surface.blit(background_image, (0, 0))
             self.__on_screen_surface.blit(self.__tableSurface, (x, y))
@@ -979,41 +985,6 @@ class Game:
 
     def stop_music(self):
         pygame.mixer.music.stop()
-
-    def console(self):
-        # ------------------------------
-        # affichage  console
-        # ------------------------------
-        for i in range(len(self.__grid)):
-            for j in range(len(self.__grid) // 2 + 1):
-                if i % 2 == 0:
-                    if self.__grid[i][j * 2].get_pawn():
-                        if self.__grid[i][j * 2].get_player() == 1:
-                            print("1", end="")
-                        if self.__grid[i][j * 2].get_player() == 2:
-                            print("2", end="")
-                        if self.__grid[i][j * 2].get_player() == 3:
-                            print("3", end="")
-                        if self.__grid[i][j * 2].get_player() == 4:
-                            print("4", end="")
-                    else:
-                        print("□", end="")
-
-                    if j != len(self.__grid) // 2:
-                        if self.__grid[i][j * 2 + 1].get_barrier():
-                            print("|", end="")
-                        else:
-                            print("*", end="")
-                else:
-                    if self.__grid[i][j * 2].get_barrier():
-                        print("-", end="")
-                    else:
-                        print("*", end="")
-                    if j != len(self.__grid) // 2:
-                        print("+", end="")
-                if j == len(self.__grid) // 2:
-                    print("")
-        print("________________________________________")
 
     def save(self):
         save = Path(__file__).parent / "save.txt"

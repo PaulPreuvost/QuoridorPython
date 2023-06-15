@@ -1,3 +1,4 @@
+import os
 def load_background() -> str:
     load_background_image = ("../user_interface/images/background.jpg")
     return load_background_image
