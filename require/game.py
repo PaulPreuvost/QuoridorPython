@@ -11,8 +11,8 @@ from pygame_widgets.button import Button
 
 from pathlib import Path
 from user_interface.colors import get_white, get_black, get_red, get_blue, \
-    get_green, get_yellow, get_light_grey, get_blue_wp, get_blue_cyan, get_violet, get_dark_violet, \
-    get_green_wp
+    get_green, get_yellow, get_blue_wp, get_blue_cyan, get_violet, get_dark_violet, \
+    get_green_wp, get_light_blue, get_light_yellow, get_light_green, get_light_red
 import client, serveur
 from case_barrier import case_barrier
 from case_pawn import case_pawn
@@ -20,7 +20,7 @@ import settings
 import launch
 import win
 
-def ressouce_path(relative_path):
+def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
     except Exception:
@@ -30,9 +30,8 @@ def ressouce_path(relative_path):
 
 class Game:
 
-    def __init__(self, number_of_player, size_board, volume, number_of_barrier=40, save=0, computer=0,
-                 network=False, host=False,
-                 clients=False):
+    def __init__(self, number_of_player, size_board, volume, number_of_barrier=40, save=0,
+                network=False, host=False, clients=False):
         self.__game_state = "Game"
         self.__cpt = 0
         self.__on_screen_surface = None
@@ -40,11 +39,7 @@ class Game:
         self.__grid = []
         self.__running = None
         self.set_first_grid()
-        self.__computer = computer
-        if self.__computer == 1:
-            self.__number_of_player = 2
-        else:
-            self.__number_of_player = number_of_player
+        self.__number_of_player = number_of_player
         self.__current_player = 1
         self.__previousActionType = []
         self.__previousPawnCoordinates = []
@@ -55,9 +50,16 @@ class Game:
         self.__bank = None
         self.__volume = volume
         self.__winner = None
+        self.__network = network
+        self.__computer = 0
+        if self.__number_of_player == 1:
+            self.__computer = 1
+            self.__number_of_player = 2
+        elif self.__number_of_player == 3:
+            self.__computer = 1
+            self.__number_of_player = 4
 
         self.__save = save
-        self.__network = False
         self.__network_player = 0
         self.network_host = False
         if network == True:
@@ -173,7 +175,7 @@ class Game:
         if self.__number_of_player == 4:
             number_barrier = number_barrier // 4
             self.__bank = {"blue": number_barrier, "red": number_barrier, "green": number_barrier,
-                           "yellow": number_barrier}
+                        "yellow": number_barrier}
         else:
             number_barrier = number_barrier // 2
             self.__bank = {"blue": number_barrier, "red": number_barrier}
@@ -185,7 +187,7 @@ class Game:
         # Y (pair ou non)
         # puis va retirer 1 barrière de la banque du joueur en cours
         # -------------------------
-        sound_barrier = (ressouce_path("require/user_interface/son/barrier.mp3"))
+        sound_barrier = (resource_path("require/user_interface/son/barrier.mp3"))
         self.__grid[x][y] = case_barrier(True)
         if y % 2 == 0:
             self.__grid[x][y + 2] = case_barrier(True)
@@ -196,6 +198,19 @@ class Game:
         self.__previousActionType.append("barrier")
         sound_thread_barriere = threading.Thread(target=self.play_barrier, args=(sound_barrier,))
         sound_thread_barriere.start()
+
+    def barrier_del(self, x, y):
+        delete_sound = (resource_path("require/user_interface/son/error.mp3"))
+        self.__grid[x][y] = case_barrier(False)
+        sound_thread_error = threading.Thread(target=self.play_delete, args=(delete_sound,))
+        sound_thread_error.start()
+        if y % 2 == 0:
+            self.__grid[x][y + 2] = case_barrier(False)
+        else:
+            self.__grid[x + 2][y] = case_barrier(False)
+        self.__bank[case_pawn(False, self.__current_player).color()] += 1
+        self.__previousBarrierCoordinates.pop(-1)
+
 
     def barrier_verification(self, x, y):
         # -------------------------
@@ -241,7 +256,7 @@ class Game:
         # ----------------------------------
 
         co = [self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][0],
-              self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][1]]
+            self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][1]]
         possibleCase = (
             [0, 2], [2, 0], [0, -2], [-2, 0], [-2, 2], [2, 2], [2, -2], [-2, -2], [0, 4], [4, 0], [0, -4], [-4, 0])
         possible_case_barrier = ([0, 1], [1, 0], [0, -1], [-1, 0], [0, 3], [3, 0], [0, -3], [-3, 0])
@@ -377,28 +392,23 @@ class Game:
 
     def pawn_placement(self, x, y):
         # -------------------------
-        # permet de placer dans la grille 1 pion selon les coordonnées
+        # permet de placer dans la grille 1 pion selon les coordonnÃ©es
         # X et Y fournies
         # puis va modifier la variable self.__pawn_coordinate pour l'adapter
         # -------------------------
-        sound_moove = ressouce_path("require/user_interface/son/pawn.mp3")
+        bonus_sound = random.randint(0, 1000)
+        if bonus_sound == 0:
+            sound_moove = (resource_path("require/user_interface/son/son_bonus1.mp3"))
+        else:
+            sound_moove = (resource_path("require/user_interface/son/pawn.mp3"))
         self.__previousPawnCoordinates.append(dict(self.__pawn_coordinate))
         self.__grid[x][y] = case_pawn(True, self.__current_player)
         self.__grid[self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][0]][
             self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][1]] = case_pawn(False, 0)
         self.__pawn_coordinate[case_pawn(False, self.__current_player).color()] = [x, y]
         self.__previousActionType.append("pawn")
-        sound_thread_moove = threading.Thread(target=self.play_pop, args=(sound_moove,))
-        sound_thread_moove.start()
-
-    def barrier_del(self, x, y):
-        self.__grid[x][y] = case_barrier(False)
-        if y % 2 == 0:
-            self.__grid[x][y + 2] = case_barrier(False)
-        else:
-            self.__grid[x + 2][y] = case_barrier(False)
-        self.__bank[case_pawn(False, self.__current_player).color()] += 1
-        self.__previousBarrierCoordinates.pop(-1)
+        sound_thread2 = threading.Thread(target=self.play_pop, args=(sound_moove,))
+        sound_thread2.start()
 
     def get_color_number(self, color):
         # Cette méthode renvoie le numéro correspondant à la couleur du joueur
@@ -490,7 +500,7 @@ class Game:
         size = self.__size_board * 75 - 25
 
         mixer.init()
-        sound_background = ressouce_path("require/user_interface/son/bg.mp3")
+        sound_background = resource_path("require/user_interface/son/bg.mp3")
         sound_thread_background = threading.Thread(target=self.play_sound, args=(sound_background,))
         sound_thread_background .start()
 
@@ -505,40 +515,46 @@ class Game:
         self.__running = True
         while self.__running:
             if int(self.__network_player) == self.__current_player or self.__network == False:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        self.__running = False
+                if (self.__current_player != self.__number_of_player and self.__computer == 1) or self.__computer == 0:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            self.__running = False
+                        elif pygame.key.get_mods() & pygame.KMOD_CTRL and pygame.key.get_pressed()[pygame.K_z]:
+                            self.back()
 
-                    if event.type == pygame.VIDEORESIZE:
-                        windowSize = event.size
-                        self.__on_screen_surface = pygame.display.set_mode(windowSize, pygame.RESIZABLE)
-                        x = (windowSize[0] - tableSurfaceSize[0]) / 2
-                        y = (windowSize[1] - tableSurfaceSize[1]) / 2
-                        self.__on_screen_surface.blit(self.__tableSurface, (x, y))
-                        pygame.display.update()
+                        if event.type == pygame.VIDEORESIZE:
+                            windowSize = event.size
+                            self.__on_screen_surface = pygame.display.set_mode(windowSize, pygame.RESIZABLE)
+                            x = (windowSize[0] - tableSurfaceSize[0]) / 2
+                            y = (windowSize[1] - tableSurfaceSize[1]) / 2
+                            self.__on_screen_surface.blit(self.__tableSurface, (x, y))
+                            pygame.display.update()
 
-                    clicx = pygame.mouse.get_pos()[0]
-                    clicy = (pygame.mouse.get_pos()[1]) - 100
-                    if x <= clicx <= x + size:
-                        if y <= clicy <= y + size:
-                            caseX = (clicx - x) / 75
-                            caseY = ((clicy - y) / 75)
-                            caseFinalX = self.case_clicked(caseX, caseY)[0]
-                            caseFinalY = self.case_clicked(caseX, caseY)[1]
+                        clicx = pygame.mouse.get_pos()[0]
+                        clicy = (pygame.mouse.get_pos()[1]) - 100
+                        if x <= clicx <= x + size:
+                            if y <= clicy <= y + size:
+                                caseX = (clicx - x) / 75
+                                caseY = ((clicy - y) / 75)
+                                caseFinalX = self.case_clicked(caseX, caseY)[0]
+                                caseFinalY = self.case_clicked(caseX, caseY)[1]
 
-                            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] == True:
-                                self.game_turn(caseFinalX, caseFinalY)
-                                if self.__network:
-                                    message = f"{caseFinalX},{caseFinalY}"
-                                    print("le message est : ", message)
-                                    self.player_instance.client_send(message)
-                                    self.display(x, y)
+                                if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] == True:
+                                    self.game_turn(caseFinalX, caseFinalY)
+                                    if self.__network:
+                                        message = f"{caseFinalX},{caseFinalY}"
+                                        print("le message est : ", message)
+                                        self.player_instance.client_send(message)
+                                        self.display(x, y+100)
 
-                                # --------parti computer------
-                                if self.__computer == 1:
-                                    self.case_computer()
+                # --------parti computer------
+                else:
+                    print("there")
+                    if self.__current_player == self.__number_of_player:
+                        print("there 2")
+                        self.case_computer()
             else:
-                self.display(x, y)
+                self.display(x, y+100)
                 message = self.player_instance.client_receive()
                 print(message)
                 message = message.split(",")
@@ -551,7 +567,7 @@ class Game:
             self.hide_widgets()
 
     def case_computer(self):
-        while self.__current_player == 2:
+        while self.__current_player == self.__number_of_player:
             result = 0
             caseX = random.randint(0, self.__size_board * 2 - 2)
             caseY = random.randint(0, self.__size_board * 2 - 2)
@@ -648,7 +664,7 @@ class Game:
                     visited_nodes_green = list(self.depth_first_search(
                         (self.__pawn_coordinate["green"][0], self.__pawn_coordinate["green"][1])))
                     if self.check_path(visited_nodes_blue, visited_nodes_red, visited_nodes_yellow,
-                                       visited_nodes_green) == True:
+                                    visited_nodes_green) == True:
                         self.change_player()
                         self.verify_victory()
                     else:
@@ -708,13 +724,13 @@ class Game:
         # -------------------------
 
         pygame.init()
-        load_font_files = ressouce_path("require/user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
+        load_font_files = resource_path("require/user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
         font_interface__XXXL = pygame.font.Font(load_font_files, 130)
         font_interface__XL = pygame.font.Font(load_font_files, 70)
         font_interface__L = pygame.font.Font(load_font_files, 45)
         font_interface__M = pygame.font.Font(load_font_files, 20)
 
-        background_image = pygame.image.load(ressouce_path("require/user_interface/images/background.jpg"))
+        background_image = pygame.image.load(resource_path("require/user_interface/images/background.jpg"))
 
         button_width = 300
         button_height = 100
@@ -829,16 +845,16 @@ class Game:
                     else:
                         if self.pawn_verification(j * 2, i):
                             if self.__current_player == 1:
-                                pygame.draw.rect(self.__tableSurface, get_light_grey(),
+                                pygame.draw.rect(self.__tableSurface, get_light_blue(),
                                                  pygame.Rect(j * 75, i / 2 * 75, 50, 50))
                             elif self.__current_player == 2:
-                                pygame.draw.rect(self.__tableSurface, get_light_grey(),
+                                pygame.draw.rect(self.__tableSurface, get_light_red(),
                                                  pygame.Rect(j * 75, i / 2 * 75, 50, 50))
                             elif self.__current_player == 3:
-                                pygame.draw.rect(self.__tableSurface, get_light_grey(),
+                                pygame.draw.rect(self.__tableSurface, get_light_green(),
                                                  pygame.Rect(j * 75, i / 2 * 75, 50, 50))
                             elif self.__current_player == 4:
-                                pygame.draw.rect(self.__tableSurface, get_light_grey(),
+                                pygame.draw.rect(self.__tableSurface, get_light_yellow(),
                                                  pygame.Rect(j * 75, i / 2 * 75, 50, 50))
 
                         else:
@@ -961,6 +977,12 @@ class Game:
         sound = mixer.Sound(filename)
         sound.play()
 
+    def play_delete(self, filename):
+        mixer.init()
+        sound = mixer.Sound(filename)
+        sound.set_volume(0.2)
+        sound.play()
+
     def play_sound(self, filename):
         mixer.init()
         mixer.music.load(filename)
@@ -999,10 +1021,14 @@ class Game:
                             save.write("T")
                         else:
                             save.write("F")
-            save.write(
-                f"\n{self.__number_of_player}\n{self.__current_player}\n{self.__pawn_coordinate}\n{self.__game_turns}\n{self.__bank}\n{self.__computer}\n{self.__size_board}")
-
-            save.close()
+            if self.__computer == 0 :
+                save.write(
+                    f"\n{self.__number_of_player}\n{self.__current_player}\n{self.__pawn_coordinate}\n{self.__game_turns}\n{self.__bank}\n{self.__size_board}")
+                save.close()
+            else:
+                save.write(
+                    f"\n{self.__number_of_player-1}\n{self.__current_player}\n{self.__pawn_coordinate}\n{self.__game_turns}\n{self.__bank}\n{self.__size_board}")
+                save.close()
 
     def load_save(self):
         save = Path(__file__).parent / "save.txt"
@@ -1017,12 +1043,12 @@ class Game:
             content = save.readlines()
             varGrille = (content[0])
             self.__number_of_player = int(content[1])
+            print("etape 1 :", self.__number_of_player)
             self.__current_player = int(content[2])
             self.__pawn_coordinate = eval((content[3]))
             self.__game_turns = int(content[4])
             self.__bank = eval(content[5])
-            self.__computer = int(content[6])
-            self.__size_board = int(content[7])
+            self.__size_board = int(content[6])
             save.close()
             incremente = 0
             self.__grid = []
@@ -1043,4 +1069,13 @@ class Game:
                             self.__grid[j].append(case_barrier(True))
                     incremente += 1
 
-            print(self.__pawn_coordinate, type(self.__pawn_coordinate))
+            if self.__number_of_player == 1:
+                self.__computer = 1
+                self.__number_of_player = 2
+            elif self.__number_of_player == 3:
+                self.__computer = 1
+                self.__number_of_player = 4
+            else:
+                self.__computer = 0
+        self.hide_widgets()
+        self.game_board()

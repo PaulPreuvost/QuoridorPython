@@ -5,14 +5,11 @@ Faire en sorte que les liens marche sur windows et mac
 et qui adapte en fonction
 
 Avec Yannis : 
--> Regler problème de bot 
--> Et chosir si le bot se met automatiquement ou on le met manuelment 
--> Tester client host 
--> Debuger ordinater
--> nombre de jouer à bugger
+-> bug multi 
 
 
 Paul : 
+-> Tester quit sarah 
 -> Mettre en exe 
 -> teste le exe sur mac
 -> TESTER PAS GE BUG

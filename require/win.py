@@ -83,7 +83,7 @@ class Win:
             # Dessiner les éléments sur l'écran
             self.__on_screen_surface.blit(background_image, (0, 0))  # Afficher l'arrière-plan
 
-            texte_surface = font_interface__XXXL.render(self.__winner + ' a gagné', True, get_white())
+            texte_surface = font_interface__XXXL.render(self.__winner + ' wins !', True, get_white())
             texte_rect = texte_surface.get_rect()
             texte_rect.center = (windowSize[0] // 2, windowSize[1] // 3)
 
@@ -91,7 +91,7 @@ class Win:
             if self.__game_state == "Game":
                 self.__on_screen_surface.fill(get_blue_cyan())
                 self.hide_widgets()
-                game.Game(2, 11, 1, 24, 0, False, False, False, False)
+                game.Game(2, 11, 1, 24, 0, False, False, False)
 
             else:
                 self.show_widgets()
