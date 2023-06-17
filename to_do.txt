@@ -12,6 +12,7 @@ Paul :
 -> Tester quit sarah 
 -> Mettre en exe 
 -> teste le exe sur mac
+-> Tester les exe en réseaux 
 -> TESTER PAS GE BUG
 -> rendre propre paramêtre game et innit géneral 
 -> Changer nom variable path_findind verif ça
@@ -30,27 +31,30 @@ Paul :
     - Read Me (voir comme ça marche)(voir message sarah) toutes les bibiothèque
     - Repartition travaille / 1teams mis à jours (Git Hub) comment on à travailler
     - shéma général --> plusieur
-	- shama uml
+	- shama UML
 	- verif pas de fautes dans tous 
 	- voir le gg drive toutes les étapes
-
 
 
 - Clean
     - TOUT REMTTRE EN SEFL/ ORIENTE object
     - changer nom path findinf verif ça marche
     - Changer nom fonctions affichage / IP
-    - enlever tout les print VRM !!!!!!!!!!!!!!!!!!!!!!!!!!
-    - Diviser le main --> faire un game.py
-    - appeler tout dans les bonnes chose
+    - appeler tout dans les bonnes chose pas en double
     - verifs pas d'appel inutile
-    - diviser classe le game
-    - Clean code / nom fonction / snake_case/ Structure dossier / Commentaire / nettoyer code / Verif fautes
+    - Clean code nettoyer code / Verif fautes
     - Typer les fonction
     - Clean code / Fichier
+    - Verif pas de redondance de fichier 
     - commenter tout le code
-        - verif pas de fautes dans les commentaire
-    - Optimiser mis à jours (rafraîchissement pages)
+
+
+- Rendu : 
+    - verif pas de fautes dans les commentaire
+    - verif pas de fautes doc 
+    - verif si il y a tout dans le dossier, 
+    - verif si .py marche 
+    - verif si .exe marche 
 
 
 - Voir les pages et fonctionnalité gg drive

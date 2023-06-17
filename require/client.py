@@ -1,6 +1,5 @@
 import socket
 
-
 class Player:
     def start(self, ip):
         self.__client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,15 +13,12 @@ class Player:
             try:
                 message_bytes = self.__client.recv(1024)
                 message = message_bytes.decode('utf-8')
-                print("ducoup j'ai recut : ", message)
                 return message
             except:
-                print('Error!')
                 self.__client.close()
                 break
 
     def client_send(self, message):
-        print("le message est toujours : ", message)
         self.__client.send(message.encode('utf-8'))
 
 

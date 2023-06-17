@@ -19,7 +19,6 @@ class Serveur:
 
     def broadcast(self,message):
         for client in self.__clients:
-            print("j'envoie le message : ",message)
             client.send(message.encode('utf-8'))
 
     # Function to handle clients'connections
@@ -30,7 +29,6 @@ class Serveur:
             try:
                 message_bytes = client.recv(1024)
                 message = message_bytes.decode('utf-8')
-                print("jai recut le message : ",message)
                 self.broadcast(message)
             except:
                 self.__clients.remove(client)
@@ -41,9 +39,7 @@ class Serveur:
 
     def receive(self):
         while True:
-            print('Server is running and listening ...')
             client, address = self.__server.accept()
-            print(f'connection is established with {str(address)}')
             self.__clients.append(client)
             client.send(str(len(self.__clients)).encode('utf-8'))
             thread = threading.Thread(target=self.handle_client, args=(client,))

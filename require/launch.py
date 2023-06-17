@@ -18,6 +18,7 @@ def resource_path(relative_path):
 
 
 class Launch:
+    # Fonction qui INIT
     def __init__(self):
         pygame.init()
         self.__on_screen_surface = None
@@ -38,25 +39,29 @@ class Launch:
         self.__font_load = resource_path("require/user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
         self.__font_interface_XL = pygame.font.Font(self.__font_load, 70)
 
-        # Initialisations des tailles de widget
+        # Initialisations des tailles des widgets
         self.__button_width = 400
         self.__button_height = 150
 
         # Espacement entre les boutons
         self.__space = 300
 
-        # Initialisations des positions de widget
+        # Initialisations des positions des widgets
         self.__x_position = ((self.__window_size[0] - (3 * self.__button_width + 2 * self.__space)) / 2) + 360
         self.__y_position = 800
 
-    def display(self):
-        pygame.display.set_caption("QUORIDOR")
-        self.__on_screen_surface = pygame.display.set_mode(self.__window_size, pygame.NOFRAME | pygame.DOUBLEBUF)
-        clock = pygame.time.Clock()
-        fps = 30  # Nombre de trames par seconde (FPS)
-        clock.tick(fps)
 
-        button_rect_quit = Button(
+    def display(self):
+        pygame.init()  # Initialisation du module pygame
+        pygame.display.set_caption("QUORIDOR")  # Définition du titre de la fenêtre
+        self.__on_screen_surface = pygame.display.set_mode(self.__window_size, pygame.FULLSCREEN)  # Création de la surface d'affichage
+        self.__clock = pygame.time.Clock()  # Création d'un objet clock pour gérer les fréquences d'images
+        self.__fps = 30  # Nombre de trames par seconde (images par seconde)
+        self.__clock.tick(self.__fps) # Limiter le nombre de trames par seconde
+
+
+        # Création du bouton "Quit" avec ses paramètres
+        self.__button_rect_quit = Button(
             self.__on_screen_surface, 1600, 40,
             int(self.__button_width / 1.5), int(self.__button_height / 1.5),
             text='Quit',
@@ -66,10 +71,11 @@ class Launch:
             radius=5,
             font=self.__font_interface_XL,
             textVAlign='center',
-            onClick=lambda: (self.quit())
+            onClick=lambda: (self.quit()) # Appel la fonction de fermeture de la fenêtre (quit()) quand on clic
         )
 
-        button_rect_play = Button(
+        # Création du bouton "Play" avec ses paramètres
+        self.__button_rect_play = Button(
             self.__on_screen_surface, int(self.__x_position), self.__y_position,
             self.__button_width, self.__button_height,
             text='Play',
@@ -79,10 +85,11 @@ class Launch:
             radius=5,
             font=self.__font_interface_XL,
             textVAlign='center',
-            onClick=lambda: (self.open_game())
+            onClick=lambda: (self.open_game()) # Appel la fonction d'ouverture du jeu (open_game()) quand on clic
         )
 
-        button_rect_settings = Button(
+        # Création du bouton "Settings" avec ses paramètres
+        self.__button_rect_settings = Button(
             self.__on_screen_surface, int(self.__x_position + self.__button_width + self.__space), self.__y_position,
             self.__button_width, int(self.__button_height),
             text='Settings',
@@ -92,30 +99,33 @@ class Launch:
             radius=5,
             font=self.__font_interface_XL,
             textVAlign='center',
-            onClick=lambda: (self.open_settings())
+            onClick=lambda: (self.open_settings()) # Appel la fonction d'ouverture des paramêtres (open_settings()) quand on clic
         )
 
+        # Boucle principale du jeu
         while self.__run:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.__run = False
-                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-                    self.__run = False
+            #Tant que self.__run renvoie True, la fenêtre est active
+            for event in pygame.event.get():  # Récupère les événements
+                if event.type == pygame.QUIT:  # Si l'événement est de type QUIT, la fenêtre se ferme 
+                    pygame.quit() # Arrête la boucle principale et quitte le jeu
+                    exit()
 
-            # Update game state
-            if self.__game_state == "Game":
-                button_rect_quit.hide()
-                button_rect_play.hide()
-                button_rect_settings.hide()
-                self.__on_screen_surface.fill(get_blue_cyan())
-                game.Game(2, 11, 1, 24, 0, False, False, False)
+            # Mise à jour de l'état du jeu
+            if self.__game_state == "Game": # Vérifie si le game_state est égale à "Game"
+                # Cache les widgets
+                self.__button_rect_quit.hide()
+                self.__button_rect_play.hide()
+                self.__button_rect_settings.hide()
+                self.__on_screen_surface.fill(get_blue_cyan()) # Remplie la zone de l'écran en bleue
+                game.Game(2, 9, 1, 20, 0, False, False, False) # Appel la classe Game, avec les valeurs par défaut qui se trouve dans le fichier game.py
 
-            elif self.__game_state == "Settings":
-                button_rect_quit.hide()
-                button_rect_play.hide()
-                button_rect_settings.hide()
-                self.__on_screen_surface.fill(get_blue_cyan())
-                settings.Settings().display()
+            elif self.__game_state == "Settings":  # Vérifie si le game_state est égale à "Settings"
+                # Cache les widgets
+                self.__button_rect_quit.hide()
+                self.__button_rect_play.hide()
+                self.__button_rect_settings.hide()
+                self.__on_screen_surface.fill(get_blue_cyan()) # Remplie la zone de l'écran en bleue
+                settings.Settings().display() # Appel la fonction display de la classe Settings, qui se trouve dans le fichier laucnh.py
 
             else:
                 self.__on_screen_surface.blit(self.__background_image, (0, 0))  # Afficher l'arrière-plan
@@ -124,15 +134,15 @@ class Launch:
             pygame_widgets.update(pygame.event.get())
             pygame.display.flip()
 
-            clock.tick(fps)  # Limiter le nombre de trames par seconde
 
-    pygame.quit()
+    pygame.quit() # Quitte le module pygame
 
-    def quit(self):
+    def quit(self): # Quitte le module pygame
         pygame.quit()
+        exit()
 
     def open_game(self):
-        self.__game_state = "Game"
+        self.__game_state = "Game" # Change l'état du jeux à "Game"
 
     def open_settings(self):
-        self.__game_state = "Settings"
+        self.__game_state = "Settings" # Change l'état du jeux à "Settings"
