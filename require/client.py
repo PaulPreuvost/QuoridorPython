@@ -1,14 +1,14 @@
 import socket
 
 class Player:
+    
     def start(self, ip):
+        #Cette fonction prend en parmêtre une IP afin de pouvoire se connecter au serveur sur le port 5566
         self.__client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__client.connect((ip, 5566))
 
-        # receive_thread = threading.Thread(target=lambda: self.client_receive())
-        # receive_thread.start()
-
     def client_receive(self):
+        # Fonction qui permet de decoder et recevoir des packets / fermer la connection client
         while True:
             try:
                 message_bytes = self.__client.recv(1024)
@@ -19,6 +19,7 @@ class Player:
                 break
 
     def client_send(self, message):
+        # Permet d'envoyer un message simple au serveur
         self.__client.send(message.encode('utf-8'))
 
 

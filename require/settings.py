@@ -28,7 +28,7 @@ class Settings:
         self.__run= True
         self.__game_state = "Settings"
 
-        # Initialisations de la taille de la fenêtre
+        # Initialisation de la taille de la fenêtre
         self.__window_size = (1920, 1080)
 
         # Chargement l'image de l'arrière-plan
@@ -262,7 +262,7 @@ class Settings:
             ],
             borderRadius=3,
             colour=get_white(),
-            values=['1', '0.75', '0.50', '0.25', '0'],
+            values=[1, 0.75, 0.50, 0.25, 0],
             font=self.__font_interface__M,
             direction='down'
         )

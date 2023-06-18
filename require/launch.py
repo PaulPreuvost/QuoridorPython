@@ -25,7 +25,7 @@ class Launch:
         self.__run = True
         self.__game_state = "Launch"  # New game state variable
 
-        # Initialisations de la taille de la fenêtre
+        # Initialisation de la taille de la fenêtre
         self.__window_size = (1920, 1080)
 
         # Charger l'image de l'arrière-plan

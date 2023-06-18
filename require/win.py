@@ -26,13 +26,13 @@ class Win:
         self.__winner = winner
         self.__game_state = "Win"
 
-        # Initialisations de la taille de la fenêtre
+        # Initialisation de la taille de la fenêtre
         self.__window_size = (1920, 1080)
 
         # Charger l'image de l'arrière-plan
         self.__background_image = pygame.image.load(resource_path("require/user_interface/images/background.jpg"))
         
-        # Initialisation des polices d'écritures 
+        # Initialisations des polices d'écritures 
         self.__font_load = resource_path("require/user_interface/fonts/Berlin_Sans_FB_Demi_Bold.ttf")
         self.__font_interface__XXXL = pygame.font.Font(self.__font_load, 250)
         self.__font_interface_L = pygame.font.Font(self.__font_load, 45)

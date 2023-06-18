@@ -85,8 +85,8 @@ class Game:
                 self.player_instance.start(ip)
                 self.__network_player = self.player_instance.client_receive()
         self.bank(number_of_barrier)
-        if self.__save == 1:
-            self.load_save()
+        if self.__save == 1: # Test si le paramêtre de sauvegarde renvoie True (1)
+            self.load_save() # Dans ce cas, appel la fonction qui charge la sauvegarde 
         self.game_board()
 
     def set_first_grid(self):
@@ -198,10 +198,10 @@ class Game:
         sound_thread_barriere = threading.Thread(target=self.play_barrier, args=(sound_barrier,))
         sound_thread_barriere.start()
 
-    def barrier_del(self, x, y):
+    def barrier_block(self, x, y):
         delete_sound = (resource_path("require/user_interface/son/error.mp3"))
         self.__grid[x][y] = case_barrier(False)
-        sound_thread_error = threading.Thread(target=self.play_delete, args=(delete_sound,))
+        sound_thread_error = threading.Thread(target=self.play_block, args=(delete_sound,))
         sound_thread_error.start()
         if y % 2 == 0:
             self.__grid[x][y + 2] = case_barrier(False)
@@ -393,18 +393,14 @@ class Game:
         # X et Y fournies
         # puis va modifier la variable self.__pawn_coordinate pour l'adapter
         # -------------------------
-        bonus_sound = random.randint(0, 1000)
-        if bonus_sound == 0:
-            sound_moove = (resource_path("require/user_interface/son/son_bonus1.mp3"))
-        else:
-            sound_moove = (resource_path("require/user_interface/son/pawn.mp3"))
+        sound_moove = (resource_path("require/user_interface/son/pawn.mp3"))
         self.__previous_pawn_coordinates.append(dict(self.__pawn_coordinate))
         self.__grid[x][y] = case_pawn(True, self.__current_player)
         self.__grid[self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][0]][
             self.__pawn_coordinate[case_pawn(False, self.__current_player).color()][1]] = case_pawn(False, 0)
         self.__pawn_coordinate[case_pawn(False, self.__current_player).color()] = [x, y]
         self.__previous_action_type.append("pawn")
-        sound_thread2 = threading.Thread(target=self.play_pop, args=(sound_moove,))
+        sound_thread2 = threading.Thread(target=self.play_moove, args=(sound_moove,))
         sound_thread2.start()
 
     def get_color_number(self, color):
@@ -421,6 +417,7 @@ class Game:
             return 0
 
     def back(self):
+        # Fonction qui permet de revenir en arrière d'un déplacement à la fois
         if len(self.__previous_action_type) == 0:
             pass
         else:
@@ -497,8 +494,8 @@ class Game:
         size = self.__size_board * 75 - 25
 
         mixer.init()
-        sound_background = resource_path("require/user_interface/son/bg.mp3")
-        sound_thread_background = threading.Thread(target=self.play_sound, args=(sound_background,))
+        sound_background = resource_path("require/user_interface/son/background.mp3") # Chargement du fond musicale
+        sound_thread_background = threading.Thread(target=self.play_sound_background, args=(sound_background,))
         sound_thread_background .start()
 
         # Surface du plateau
@@ -518,17 +515,9 @@ class Game:
                         elif pygame.key.get_mods() & pygame.KMOD_CTRL and pygame.key.get_pressed()[pygame.K_z]:
                             self.back()
 
-                        if event.type == pygame.VIDEORESIZE:
-                            windowSize = event.size
-                            self.__on_screen_surface = pygame.display.set_mode(windowSize, pygame.RESIZABLE)
-                            x = (windowSize[0] - table_surface_size[0]) / 2
-                            y = (windowSize[1] - table_surface_size[1]) / 2
-                            self.__on_screen_surface.blit(self.__tableSurface, (x, y))
-                            pygame.display.update()
+                        clicx = pygame.mouse.get_pos()[0] # Récuper clic de la souris sur les absices
 
-                        clicx = pygame.mouse.get_pos()[0]
-
-                        clicy = (pygame.mouse.get_pos()[1]) - 100
+                        clicy = (pygame.mouse.get_pos()[1]) - 100 # Récuper clic de la souris sur les ordonnées
                         if x <= clicx <= x + size:
                             if y <= clicy <= y + size:
                                 caseX = (clicx - x) / 75
@@ -543,7 +532,7 @@ class Game:
                                         self.player_instance.client_send(message)
                                         self.display(x, y+100)
 
-                # --------parti computer------
+                # --------Partie computer------
                 else:
                     if self.__current_player == self.__number_of_player:
                         self.case_computer()
@@ -559,7 +548,7 @@ class Game:
             clock.tick(self.__fps)
             self.hide_widgets()
 
-    def case_computer(self):
+    def case_computer(self): # permet à l'ordinateur de se dépalcer
         while self.__current_player == self.__number_of_player:
             result = 0
             caseX = random.randint(0, self.__size_board * 2 - 2)
@@ -599,20 +588,20 @@ class Game:
         # -------------------------
         if self.__pawn_coordinate["blue"][0] == 0:
             self.__winner = "Blue"
-            self.__game_state = "Win"
+            self.__game_state = "Win" # Change l'état du jeu à "Win"
             return True
         elif self.__pawn_coordinate["red"][0] == self.__size_board * 2 - 2:
             self.__winner = "Red"
-            self.__game_state = "Win"
+            self.__game_state = "Win" # Change l'état du jeu à "Win"
             return True
         if self.__number_of_player == 4:
             if self.__pawn_coordinate["yellow"][1] == 0:
                 self.__winner = "Yellow"
-                self.__game_state = "Win"
+                self.__game_state = "Win" # Change l'état du jeu à "Win"
                 return True
             elif self.__pawn_coordinate["green"][1] == self.__size_board * 2 - 2:
                 self.__winner = "Green"
-                self.__game_state = "Win"
+                self.__game_state = "Win" # Change l'état du jeu à "Win"
                 return True
             else:
                 return False
@@ -661,42 +650,54 @@ class Game:
                         self.change_player()
                         self.verify_victory()
                     else:
-                        self.barrier_del(y, x)
+                        self.barrier_block(y, x)
                 else:
                     if self.check_path(visited_nodes_blue, visited_nodes_red) == True:
                         self.change_player()
                         self.verify_victory()
                     else:
-                        self.barrier_del(y, x)
+                        self.barrier_block(y, x)
 
     def check_path(self, blue, red, yellow=None, green=None):
+        # Vérification des chemins bleus
         check_blue, check_red, check_yellow, check_green = False, False, False, False
         for i in range(len(blue)):
+            # Vérifie si la coordonnée x du chemin bleu est égale à 0
             if blue[i][0] == 0:
                 check_blue = True
             else:
                 pass
 
+        # Vérification des chemins rouges
         for i in range(len(red)):
+            # Vérifie si la coordonnée x du chemin rouge est égale à self.__size_board * 2 - 2
             if red[i][0] == self.__size_board * 2 - 2:
                 check_red = True
             else:
                 pass
 
+        # Vérification des chemins jaunes et verts (facultatif)
         if yellow == None and green == None:
+            # Si les chemins jaunes et verts ne sont pas fournis, retourne True si les chemins bleus et rouges sont valides
             return check_blue == True and check_red == True
         else:
+            # Vérification des chemins jaunes
             for i in range(len(yellow)):
+                # Vérifie si la coordonnée y du chemin jaune est égale à 0
                 if yellow[i][1] == 0:
                     check_yellow = True
                 else:
                     pass
 
+            # Vérification des chemins verts
             for i in range(len(green)):
+                # Vérifie si la coordonnée y du chemin vert est égale à self.__size_board * 2 - 2
                 if green[i][1] == self.__size_board * 2 - 2:
                     check_green = True
                 else:
                     pass
+
+            # Retourne True si les chemins bleus, rouges, jaunes et verts sont valides
             return check_blue == True and check_red == True and check_yellow == True and check_green == True
 
     def change_player(self):
@@ -754,7 +755,7 @@ class Game:
             radius=5,
             font=font_interface__L,
             textVAlign='center',
-            onClick=lambda: (self.save())
+            onClick=lambda: (self.save()) # Appel la fonction pour lancer la sauvegarde (save()) quand on clic 
         )
 
         self.__button_rect_load = Button(
@@ -767,7 +768,7 @@ class Game:
             radius=5,
             font=font_interface__L,
             textVAlign='center',
-            onClick=lambda: (self.load_save())
+            onClick=lambda: (self.load_save()) # Appel la fonction pour charger la sauvegarde (load_save()) quand on clic 
         )
 
         self.__button_back = Button(
@@ -780,7 +781,7 @@ class Game:
             radius=5,
             font=font_interface__L,
             textVAlign='center',
-            onClick=lambda: (self.back())
+            onClick=lambda: (self.back()) # Appel la fonction pour revenir au déplacement précédent (back()) quand on clic 
         )
 
         self.__button_mute = Button(
@@ -793,7 +794,7 @@ class Game:
             radius=5,
             font=font_interface__L,
             textVAlign='center',
-            onClick=lambda: (self.mute())
+            onClick=lambda: (self.mute()) # Appel la fonction pour mute sur la musique de fond (mute()) quand on clic
         )
 
         self.__button_back_window = Button(
@@ -806,7 +807,7 @@ class Game:
             radius=5,
             font=font_interface__L,
             textVAlign='center',
-            onClick=lambda: (self.back_window())
+            onClick=lambda: (self.back_window()) # Appel la fonction pour revenir sur la page précédente (back_window()) quand on clic
         )
 
         self.__button_settings = Button(
@@ -819,7 +820,7 @@ class Game:
             radius=5,
             font=font_interface__L,
             textVAlign='center',
-            onClick=lambda: (self.open_settings())
+            onClick=lambda: (self.open_settings()) # Appel la fonction d'ouverture des paramêtres (open_settings()) quand on clic
         )
 
         for i in range(len(self.__grid)):
@@ -907,7 +908,7 @@ class Game:
         self.__zone_title.blit(title_board, (0, 0))
 
         # Update game state
-        if self.__game_state == "Launch":
+        if self.__game_state == "Launch": 
             self.stop_music()
             self.__on_screen_surface.fill(get_blue_cyan())
             self.hide_widgets()
@@ -954,7 +955,7 @@ class Game:
         self.__zone_current_player.hide()
 
     def show_widgets(self):
-        # Masquez tous les widgets en appelant leur méthode hide()
+        # Afficher tous les widgets en appelant leur méthode hide()
         self.__button_save.show()
         self.__button_rect_load.show()
         self.__button_back.show()
@@ -963,49 +964,49 @@ class Game:
         self.__button_settings.show()
         self.__zone_current_player.show()
 
-    def play_pop(self, filename):
+    def play_moove(self, filename):  # Fonction qui lance un son quand on se déplace 
         mixer.init()
         sound = mixer.Sound(filename)
         sound.play()
 
-    def play_barrier(self, filename):
+    def play_barrier(self, filename): # Fonction qui lance un son quand on pose une barrière
         mixer.init()
         sound = mixer.Sound(filename)
         sound.play()
 
-    def play_delete(self, filename):
+    def play_block(self, filename): # Fonction qui lance un son quand on ne peux pas poser de barrière
         mixer.init()
         sound = mixer.Sound(filename)
         sound.set_volume(0.2)
         sound.play()
 
-    def play_sound(self, filename):
+    def play_sound_background(self, filename): # Fonction qui lance la musique de fond
         mixer.init()
         mixer.music.load(filename)
         mixer.music.set_volume(self.__volume)
         mixer.music.play(-1)
 
-    def mute(self):
-        if self.__cpt == 0:
+    def mute(self): # Fonction qui mute la musique de fond
+        if self.__cpt == 0: # Si on appuie une fois ça met sur pause
             pygame.mixer.music.pause()
             self.__cpt += 1
-        elif self.__cpt == 1:
+        elif self.__cpt == 1: # Si on appuie deux fois ça relance
             pygame.mixer.music.unpause()
             self.__cpt -= 1
 
-    def stop_music(self):
+    def stop_music(self): # Fonction qui stop la musique de fond / sons
         pygame.mixer.music.stop()
 
-    def save(self):
+    def save(self): # Fonction qui enregistre la partie sous différente forme dans un fichier txt
         save = Path(__file__).parent / "save.txt"
-        conditionFichier = False
+        file_condition = False
         try:
             open(save, 'w')
-            conditionFichier = True
+            file_condition = True
         except:
-            conditionFichier = False
+            file_condition = False
 
-        if conditionFichier:
+        if file_condition:
             save = open(save, 'w')
             for i in range(len(self.__grid)):
                 for j in range(len(self.__grid)):
@@ -1025,15 +1026,15 @@ class Game:
                     f"\n{self.__number_of_player-1}\n{self.__current_player}\n{self.__pawn_coordinate}\n{self.__game_turns}\n{self.__bank}\n{self.__size_board}")
                 save.close()
 
-    def load_save(self):
+    def load_save(self): # Fonction qui charge la partie à partir du fichier txt
         save = Path(__file__).parent / "save.txt"
-        conditionFichier = False
+        file_condition = False
         try:
             open(save, 'r')
-            conditionFichier = True
+            file_condition = True
         except:
-            conditionFichier = False
-        if conditionFichier:
+            file_condition = False
+        if file_condition:
             save = open(save, 'r')
             content = save.readlines()
             varGrille = (content[0])
