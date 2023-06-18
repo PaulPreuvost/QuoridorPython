@@ -540,7 +540,12 @@ class Game:
                 self.display(x, y+100)
                 message = self.player_instance.client_receive()
                 message = message.split(",")
-                self.game_turn(int(message[0]), int(message[1]))
+                if len(message[0])>1:
+                    self.game_turn(int(message[0][0]), int(message[1]))
+                elif len(message[1])>1:
+                    self.game_turn(int(message[0]), int(message[1][0]))
+                else:
+                    self.game_turn(int(message[0]), int(message[1]))
 
             self.display(x, y + 100)
             self.__fps = 30

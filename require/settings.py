@@ -432,7 +432,7 @@ class Settings:
         self.__zone_client_ip.blit(ip_client_label, (0, 0))
 
         # Fonction, qui permet d'écrire dans la zone pour le code client
-        def afficher_zone_texte(x, y, largeur, hauteur, texte):
+        def texte_zone_view(x, y, largeur, hauteur, texte):
             zone_texte = pygame.Rect(x, y, largeur, hauteur)
             pygame.draw.rect(self.__on_screen_surface, get_white(), zone_texte)
             pygame.draw.rect(self.__on_screen_surface, get_black(), zone_texte, 2)
@@ -522,7 +522,7 @@ class Settings:
                 self.__button_rect_play.draw()
                 self.__button_rect_back.draw()
                 self.__button_rect_quit.draw()
-                afficher_zone_texte(735, 500, 500, 70, self.__ip_client) # Appel la fonction pour mettre le code client
+                texte_zone_view(735, 500, 500, 70, self.__ip_client) # Appel la fonction pour mettre le code client
 
             pygame_widgets.update(pygame.event.get())
             pygame.display.update()
