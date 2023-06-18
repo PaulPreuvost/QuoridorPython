@@ -65,7 +65,7 @@ class Settings:
 
 
         # Initialisations des paramêtres à choisir par l'utilisateur, 
-        # On leurs attribuent les valeurs par défaut 
+        # On leur attribue les valeurs par défaut
         self.__selected_size_board = 9 # Taille du plateau
         self.__selected_number_of_players = 2 # Nombre de joueurs
         self.__selected_sound_volume = 1 # Volume de la musique
@@ -452,7 +452,7 @@ class Settings:
                     if event.key == pygame.K_RETURN:
                         self.__client_ip_choose = self.__ip_client # Si on appuie sur la touche "entrer" du clavier, on valide l'Host Code choisi
                     elif event.key == pygame.K_BACKSPACE:
-                        self.__ip_client = self.__ip_client[:-1] # Si on appuie sur la touche "supprimer" du clavier, on supprime le caractère qu'on vien de taper
+                        self.__ip_client = self.__ip_client[:-1] # Si on appuie sur la touche "supprimer" du clavier, on supprime le caractère qu'on vient de taper
                     else:
                         if event.unicode in "0123456789": # Vérifie, que ce que l'utilisateur écrit dans la zone de texte est bien un chiffre
                             self.__ip_client += event.unicode

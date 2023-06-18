@@ -19,13 +19,13 @@ class Serveur:
 
 
     def broadcast(self,message):
-        # Fonction qui permet une redistribution broadcast des packets récupérer
+        # Fonction qui permet une redistribution broadcast des paquets récupérer
         for client in self.__clients:
             client.send(message.encode('utf-8'))
 
 
     def handle_client(self,client):
-        # Fonction qui permet de recevoir des packets client
+        # Fonction qui permet de recevoir des paquets client
         while True:
             try:
                 message_bytes = client.recv(1024)
