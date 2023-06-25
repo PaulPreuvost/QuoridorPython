@@ -40,6 +40,13 @@ class Game:
         self.__run = True
         self.set_first_grid()
         self.__number_of_player = number_of_player
+        self.__computer = 0
+        if self.__number_of_player == 1:
+            self.__computer = 1
+            self.__number_of_player = 2
+        elif self.__number_of_player == 3:
+            self.__computer = 1
+            self.__number_of_player = 4
         self.__current_player = 1
         self.__previous_action_type = []
         self.__previous_pawn_coordinates = []
@@ -51,13 +58,6 @@ class Game:
         self.__volume = volume
         self.__winner = None
         self.__network = network
-        self.__computer = 0
-        if self.__number_of_player == 1:
-            self.__computer = 1
-            self.__number_of_player = 2
-        elif self.__number_of_player == 3:
-            self.__computer = 1
-            self.__number_of_player = 4
 
         self.__save = save
         self.__network_player = 0
@@ -85,9 +85,10 @@ class Game:
                 self.player_instance.start(ip)
                 self.__network_player = self.player_instance.client_receive()
         self.bank(number_of_barrier)
-        if self.__save == 1: # Test si le paramêtre de sauvegarde renvoie True (1)
+        if self.__save == 1: # Test si le paramÃªtre de sauvegarde renvoie True (1)
             self.load_save() # Dans ce cas, appel la fonction qui charge la sauvegarde 
         self.game_board()
+
 
     def set_first_grid(self):
         # -------------------------
